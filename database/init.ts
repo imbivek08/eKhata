@@ -42,6 +42,7 @@ export const initDatabase = async () => {
       id TEXT PRIMARY KEY NOT NULL,
       transaction_id TEXT NOT NULL,
       product_name TEXT NOT NULL,
+      quantity TEXT,
       amount REAL NOT NULL,
       created_at TEXT NOT NULL,
       FOREIGN KEY (transaction_id) REFERENCES transactions (id) ON DELETE CASCADE
@@ -54,6 +55,15 @@ export const initDatabase = async () => {
     CREATE INDEX IF NOT EXISTS idx_date ON transactions(date);
     CREATE INDEX IF NOT EXISTS idx_transaction_id ON products(transaction_id);
   `);
+
+  // Migration: Add quantity column to existing products table if it doesn't exist
+  try {
+    await db.execAsync(`
+      ALTER TABLE products ADD COLUMN quantity TEXT;
+    `);
+  } catch (error) {
+    // Column already exists, ignore error
+  }
 
   dbInstance = db;
   return db;

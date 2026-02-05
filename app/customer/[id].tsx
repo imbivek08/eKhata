@@ -70,7 +70,12 @@ export default function CustomerDetailScreen() {
         <View style={styles.productsContainer}>
           {item.products.map((product) => (
             <View key={product.id} style={styles.productRow}>
-              <Text style={styles.productName}>{product.product_name}</Text>
+              <View style={styles.productInfo}>
+                <Text style={styles.productName}>{product.product_name}</Text>
+                {product.quantity && (
+                  <Text style={styles.productQuantity}>Qty: {product.quantity}</Text>
+                )}
+              </View>
               <Text style={styles.productAmount}>₹{product.amount}</Text>
             </View>
           ))}
@@ -104,7 +109,7 @@ export default function CustomerDetailScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <Stack.Screen
         options={{
           title: customer.name,
@@ -208,6 +213,7 @@ const styles = StyleSheet.create({
   balanceCard: {
     backgroundColor: '#f9f9f9',
     padding: 24,
+    paddingTop: 32,
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
@@ -301,12 +307,20 @@ const styles = StyleSheet.create({
   productRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     paddingVertical: 4,
+  },
+  productInfo: {
+    flex: 1,
   },
   productName: {
     fontSize: 14,
     color: '#333',
-    flex: 1,
+  },
+  productQuantity: {
+    fontSize: 12,
+    color: '#999',
+    marginTop: 2,
   },
   productAmount: {
     fontSize: 14,

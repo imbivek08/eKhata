@@ -21,6 +21,7 @@ export interface Product {
   id: string;
   transaction_id: string;
   product_name: string;
+  quantity?: string;
   amount: number;
   created_at: string;
 }
@@ -41,6 +42,7 @@ export interface NewTransaction {
 
 export interface NewProduct {
   product_name: string;
+  quantity?: string;
   amount: number;
 }
 

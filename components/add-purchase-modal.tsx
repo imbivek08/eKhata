@@ -27,12 +27,12 @@ export default function AddPurchaseModal({
   onPurchaseAdded,
 }: AddPurchaseModalProps) {
   const [products, setProducts] = useState<NewProduct[]>([
-    { product_name: '', amount: 0 },
+    { product_name: '', quantity: '', amount: 0 },
   ]);
   const [saving, setSaving] = useState(false);
 
   const addProductRow = () => {
-    setProducts([...products, { product_name: '', amount: 0 }]);
+    setProducts([...products, { product_name: '', quantity: '', amount: 0 }]);
   };
 
   const removeProductRow = (index: number) => {
@@ -86,7 +86,7 @@ export default function AddPurchaseModal({
 
       console.log('Transaction added successfully');
       // Reset form
-      setProducts([{ product_name: '', amount: 0 }]);
+      setProducts([{ product_name: '', quantity: '', amount: 0 }]);
       onPurchaseAdded();
       onClose();
     } catch (error) {
@@ -98,7 +98,7 @@ export default function AddPurchaseModal({
   };
 
   const handleClose = () => {
-    setProducts([{ product_name: '', amount: 0 }]);
+    setProducts([{ product_name: '', quantity: '', amount: 0 }]);
     onClose();
   };
 
@@ -140,6 +140,13 @@ export default function AddPurchaseModal({
                     value={product.product_name}
                     onChangeText={(value) => updateProduct(index, 'product_name', value)}
                     placeholder="Product name"
+                    editable={!saving}
+                  />
+                  <TextInput
+                    style={[styles.input, styles.quantityInput]}
+                    value={product.quantity || ''}
+                    onChangeText={(value) => updateProduct(index, 'quantity', value)}
+                    placeholder="Qty"
                     editable={!saving}
                   />
                   <TextInput
@@ -264,6 +271,9 @@ const styles = StyleSheet.create({
   productNameInput: {
     flex: 2,
   },
+  quantityInput: {
+    flex: 1,
+  },
   amountInput: {
     flex: 1,
     textAlign: 'right',
@@ -317,7 +327,7 @@ const styles = StyleSheet.create({
     color: '#FF3B30',
   },
   saveButton: {
-    backgroundColor: '#FF3B30',
+    backgroundColor: '#34C759',
     borderRadius: 8,
     paddingVertical: 16,
     alignItems: 'center',

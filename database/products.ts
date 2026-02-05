@@ -31,8 +31,8 @@ export const addProduct = async (
   const timestamp = now();
 
   await db.runAsync(
-    'INSERT INTO products (id, transaction_id, product_name, amount, created_at) VALUES (?, ?, ?, ?, ?)',
-    [id, transactionId, product.product_name, product.amount, timestamp]
+    'INSERT INTO products (id, transaction_id, product_name, quantity, amount, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+    [id, transactionId, product.product_name, product.quantity || null, product.amount, timestamp]
   );
 
   const newProduct = await db.getFirstAsync<Product>(
