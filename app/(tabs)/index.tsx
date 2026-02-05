@@ -3,7 +3,8 @@ import LandingScreen from '@/components/landing-screen';
 import { Customer, getAllCustomers } from '@/database';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -48,7 +49,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Ekhata</Text>
+        <Text style={styles.title}>eKhata</Text>
         <TouchableOpacity 
           style={styles.addButton}
           onPress={() => setShowAddModal(true)}

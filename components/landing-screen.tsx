@@ -1,4 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface LandingScreenProps {
   onGetStarted: () => void;
@@ -6,7 +7,7 @@ interface LandingScreenProps {
 
 export default function LandingScreen({ onGetStarted }: LandingScreenProps) {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <View style={styles.iconContainer}>
           <Text style={styles.icon}>📒</Text>
@@ -47,7 +48,7 @@ export default function LandingScreen({ onGetStarted }: LandingScreenProps) {
           Simple. Secure. Offline.
         </Text>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

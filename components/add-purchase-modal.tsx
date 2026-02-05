@@ -233,6 +233,7 @@ const styles = StyleSheet.create({
   },
   form: {
     padding: 20,
+    paddingTop: 24,
     paddingBottom: 40,
   },
   sectionTitle: {
