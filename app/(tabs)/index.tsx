@@ -3,7 +3,7 @@ import LandingScreen from '@/components/landing-screen';
 import { Customer, getAllCustomers } from '@/database';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
@@ -33,6 +33,13 @@ export default function HomeScreen() {
       style={styles.customerRow}
       onPress={() => router.push(`/customer/${item.id}` as any)}
     >
+      {item.photo_uri ? (
+        <Image source={{ uri: item.photo_uri }} style={styles.customerPhoto} />
+      ) : (
+        <View style={styles.customerPhotoPlaceholder}>
+          <Text style={styles.customerPhotoPlaceholderText}>{item.name.charAt(0).toUpperCase()}</Text>
+        </View>
+      )}
       <View style={styles.customerInfo}>
         <Text style={styles.customerName}>{item.name}</Text>
         {item.phone && <Text style={styles.customerPhone}>{item.phone}</Text>}
@@ -126,6 +133,26 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 12,
     minHeight: 70,
+  },
+  customerPhoto: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 12,
+  },
+  customerPhotoPlaceholder: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#007AFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  customerPhotoPlaceholderText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#fff',
   },
   customerInfo: {
     flex: 1,

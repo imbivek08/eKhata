@@ -33,8 +33,8 @@ export const addCustomer = async (customer: NewCustomer): Promise<Customer> => {
   const timestamp = now();
 
   await db.runAsync(
-    'INSERT INTO customers (id, name, phone, total_pending, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
-    [id, customer.name, customer.phone || null, 0, timestamp, timestamp]
+    'INSERT INTO customers (id, name, phone, photo_uri, total_pending, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    [id, customer.name, customer.phone || null, customer.photo_uri || null, 0, timestamp, timestamp]
   );
 
   const newCustomer = await getCustomerById(id);

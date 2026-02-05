@@ -2,6 +2,7 @@ export interface Customer {
   id: string;
   name: string;
   phone?: string;
+  photo_uri?: string;
   total_pending: number;
   created_at: string;
   updated_at: string;
@@ -29,6 +30,7 @@ export interface Product {
 export interface NewCustomer {
   name: string;
   phone?: string;
+  photo_uri?: string;
 }
 
 export interface NewTransaction {

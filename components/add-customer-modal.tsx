@@ -1,7 +1,9 @@
 import { addCustomer } from '@/database';
+import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import {
     Alert,
+    Image,
     KeyboardAvoidingView,
     Modal,
     Platform,
@@ -25,7 +27,43 @@ export default function AddCustomerModal({
 }: AddCustomerModalProps) {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const pickImage = async (useCamera: boolean) => {
+    const { status } = useCamera
+      ? await ImagePicker.requestCameraPermissionsAsync()
+      : await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'Please allow access to continue');
+      return;
+    }
+
+    const result = useCamera
+      ? await ImagePicker.launchCameraAsync({
+          allowsEditing: true,
+          aspect: [1, 1],
+          quality: 0.5,
+        })
+      : await ImagePicker.launchImageLibraryAsync({
+          allowsEditing: true,
+          aspect: [1, 1],
+          quality: 0.5,
+        });
+
+    if (!result.canceled) {
+      setPhotoUri(result.assets[0].uri);
+    }
+  };
+
+  const showImagePicker = () => {
+    Alert.alert('Add Photo', 'Choose an option', [
+      { text: 'Take Photo', onPress: () => pickImage(true) },
+      { text: 'Choose from Gallery', onPress: () => pickImage(false) },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
+  };
 
   const handleSave = async () => {
     if (!name.trim()) {
@@ -38,9 +76,11 @@ export default function AddCustomerModal({
       await addCustomer({
         name: name.trim(),
         phone: phone.trim() || undefined,
+        photo_uri: photoUri || undefined,
       });
       setName('');
       setPhone('');
+      setPhotoUri(null);
       onCustomerAdded();
       onClose();
     } catch (error) {
@@ -54,6 +94,7 @@ export default function AddCustomerModal({
   const handleClose = () => {
     setName('');
     setPhone('');
+    setPhotoUri(null);
     onClose();
   };
 
@@ -72,6 +113,18 @@ export default function AddCustomerModal({
           </View>
 
           <View style={styles.form}>
+            <Text style={styles.label}>Photo (Optional)</Text>
+            <TouchableOpacity style={styles.photoButton} onPress={showImagePicker}>
+              {photoUri ? (
+                <Image source={{ uri: photoUri }} style={styles.photoPreview} />
+              ) : (
+                <View style={styles.photoPlaceholder}>
+                  <Text style={styles.photoPlaceholderText}>📷</Text>
+                  <Text style={styles.photoPlaceholderLabel}>Add Photo</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+
             <Text style={styles.label}>Name *</Text>
             <TextInput
               style={styles.input}
@@ -146,6 +199,36 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 8,
     marginTop: 12,
+  },
+  photoButton: {
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  photoPreview: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: '#007AFF',
+  },
+  photoPlaceholder: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#f0f0f0',
+    borderWidth: 2,
+    borderColor: '#ddd',
+    borderStyle: 'dashed',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  photoPlaceholderText: {
+    fontSize: 32,
+    marginBottom: 4,
+  },
+  photoPlaceholderLabel: {
+    fontSize: 12,
+    color: '#666',
   },
   input: {
     borderWidth: 1,

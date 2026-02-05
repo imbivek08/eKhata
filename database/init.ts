@@ -16,6 +16,7 @@ export const initDatabase = async () => {
       id TEXT PRIMARY KEY NOT NULL,
       name TEXT NOT NULL,
       phone TEXT,
+      photo_uri TEXT,
       total_pending REAL DEFAULT 0,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
@@ -60,6 +61,15 @@ export const initDatabase = async () => {
   try {
     await db.execAsync(`
       ALTER TABLE products ADD COLUMN quantity TEXT;
+    `);
+  } catch (error) {
+    // Column already exists, ignore error
+  }
+
+  // Migration: Add photo_uri column to existing customers table if it doesn't exist
+  try {
+    await db.execAsync(`
+      ALTER TABLE customers ADD COLUMN photo_uri TEXT;
     `);
   } catch (error) {
     // Column already exists, ignore error

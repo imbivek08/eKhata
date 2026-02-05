@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
     FlatList,
+    Image,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -118,6 +119,13 @@ export default function CustomerDetailScreen() {
       />
 
       <View style={styles.balanceCard}>
+        {customer.photo_uri ? (
+          <Image source={{ uri: customer.photo_uri }} style={styles.customerPhoto} />
+        ) : (
+          <View style={styles.customerPhotoPlaceholder}>
+            <Text style={styles.customerPhotoPlaceholderText}>{customer.name.charAt(0).toUpperCase()}</Text>
+          </View>
+        )}
         <Text style={styles.balanceLabel}>Total Pending</Text>
         <Text
           style={[
@@ -217,6 +225,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
+  },
+  customerPhoto: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginBottom: 16,
+    borderWidth: 3,
+    borderColor: '#fff',
+  },
+  customerPhotoPlaceholder: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginBottom: 16,
+    backgroundColor: '#007AFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  customerPhotoPlaceholderText: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: '#fff',
   },
   balanceLabel: {
     fontSize: 16,
