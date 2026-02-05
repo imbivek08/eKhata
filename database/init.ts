@@ -1,10 +1,15 @@
 import * as SQLite from 'expo-sqlite';
 
 const DATABASE_NAME = 'ekhata.db';
+let dbInstance: SQLite.SQLiteDatabase | null = null;
 
 export const initDatabase = async () => {
-  const db = await SQLite.openDatabaseAsync(DATABASE_NAME);
+  if (dbInstance) {
+    return dbInstance;
+  }
 
+  const db = await SQLite.openDatabaseAsync(DATABASE_NAME);
+  
   // Create customers table
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS customers (
@@ -50,9 +55,13 @@ export const initDatabase = async () => {
     CREATE INDEX IF NOT EXISTS idx_transaction_id ON products(transaction_id);
   `);
 
+  dbInstance = db;
   return db;
 };
 
 export const getDatabase = async () => {
-  return await SQLite.openDatabaseAsync(DATABASE_NAME);
+  if (!dbInstance) {
+    return await initDatabase();
+  }
+  return dbInstance;
 };

@@ -8,6 +8,7 @@ import { initDatabase } from '@/database';
 
 export default function RootLayout() {
   const [dbInitialized, setDbInitialized] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const setupDatabase = async () => {
@@ -16,11 +17,20 @@ export default function RootLayout() {
         setDbInitialized(true);
       } catch (error) {
         console.error('Failed to initialize database:', error);
+        setError('Failed to initialize database. Please restart the app.');
       }
     };
 
     setupDatabase();
   }, []);
+
+  if (error) {
+    return (
+      <View style={styles.loading}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
 
   if (!dbInitialized) {
     return (
@@ -46,5 +56,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',
+  },
+  errorText: {
+    color: '#FF3B30',
+    fontSize: 16,
+    textAlign: 'center',
+    paddingHorizontal: 40,
   },
 });
