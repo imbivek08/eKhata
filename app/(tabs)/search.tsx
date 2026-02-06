@@ -100,16 +100,17 @@ export default function SearchScreen() {
         </View>
       </View>
 
-      {query.length > 0 && (
-        <View style={styles.resultsBadge}>
-          <Text style={styles.resultsText}>
-            {filtered.length} result{filtered.length !== 1 ? 's' : ''} found
-          </Text>
-        </View>
-      )}
+      <View style={styles.contentArea}>
+        {query.length > 0 && (
+          <View style={styles.resultsBadge}>
+            <Text style={styles.resultsText}>
+              {filtered.length} result{filtered.length !== 1 ? 's' : ''} found
+            </Text>
+          </View>
+        )}
 
-      {filtered.length === 0 ? (
-        <View style={styles.emptyState}>
+        {filtered.length === 0 ? (
+          <View style={styles.emptyState}>
           <View style={styles.emptyIconCircle}>
             <MaterialIcons
               name={query ? 'search-off' : 'people-outline'}
@@ -133,6 +134,7 @@ export default function SearchScreen() {
           showsVerticalScrollIndicator={false}
         />
       )}
+      </View>
     </SafeAreaView>
   );
 }
@@ -140,15 +142,19 @@ export default function SearchScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: '#4A90D9',
   },
   heroSection: {
     backgroundColor: '#4A90D9',
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 8,
     paddingBottom: 20,
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
+  },
+  contentArea: {
+    flex: 1,
+    backgroundColor: '#F1F5F9',
   },
   title: {
     fontSize: 26,

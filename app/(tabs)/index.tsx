@@ -1,31 +1,24 @@
-import LandingScreen from '@/components/landing-screen';
 import { Customer, getAllCustomers } from '@/database';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const [showLanding, setShowLanding] = useState(true);
 
   const loadCustomers = async () => {
     const data = await getAllCustomers();
     setCustomers(data);
   };
 
-  useEffect(() => {
-    loadCustomers();
-  }, []);
-
-  const handleGetStarted = () => {
-    setShowLanding(false);
-  };
-
-  if (showLanding) {
-    return <LandingScreen onGetStarted={handleGetStarted} />;
-  }
+  useFocusEffect(
+    useCallback(() => {
+      loadCustomers();
+    }, [])
+  );
 
   const totalPending = customers.reduce((sum, c) => sum + c.total_pending, 0);
 
@@ -76,23 +69,25 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      {customers.length === 0 ? (
-        <View style={styles.emptyState}>
-          <View style={styles.emptyIconCircle}>
-            <MaterialIcons name="person-add" size={36} color="#CBD5E1" />
+      <View style={styles.contentArea}>
+        {customers.length === 0 ? (
+          <View style={styles.emptyState}>
+            <View style={styles.emptyIconCircle}>
+              <MaterialIcons name="person-add" size={36} color="#CBD5E1" />
+            </View>
+            <Text style={styles.emptyText}>No customers yet</Text>
+            <Text style={styles.emptySubtext}>Tap the + button to add your first customer</Text>
           </View>
-          <Text style={styles.emptyText}>No customers yet</Text>
-          <Text style={styles.emptySubtext}>Tap the + button to add your first customer</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={customers}
-          renderItem={renderCustomer}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.list}
-          showsVerticalScrollIndicator={false}
-        />
-      )}
+        ) : (
+          <FlatList
+            data={customers}
+            renderItem={renderCustomer}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.list}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
+      </View>
     </SafeAreaView>
   );
 }
@@ -100,15 +95,19 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: '#4A90D9',
   },
   heroSection: {
     backgroundColor: '#4A90D9',
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 8,
     paddingBottom: 20,
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
+  },
+  contentArea: {
+    flex: 1,
+    backgroundColor: '#F1F5F9',
   },
   title: {
     fontSize: 26,

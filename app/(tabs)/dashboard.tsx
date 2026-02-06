@@ -96,11 +96,12 @@ export default function DashboardScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView
-        style={styles.scrollView}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#fff" />}
-        showsVerticalScrollIndicator={false}
-      >
+      <View style={styles.contentArea}>
+        <ScrollView
+          style={styles.scrollView}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#fff" />}
+          showsVerticalScrollIndicator={false}
+        >
         {/* Colored Header */}
         <View style={styles.heroSection}>
           <Text style={styles.title}>📊 Dashboard</Text>
@@ -291,7 +292,8 @@ export default function DashboardScreen() {
         </View>
 
         <View style={{ height: 32 }} />
-      </ScrollView>
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -299,16 +301,20 @@ export default function DashboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: '#4A90D9',
   },
   scrollView: {
     flex: 1,
+  },
+  contentArea: {
+    flex: 1,
+    backgroundColor: '#F1F5F9',
   },
   // ── Hero Header ──
   heroSection: {
     backgroundColor: '#4A90D9',
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 8,
     paddingBottom: 24,
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,

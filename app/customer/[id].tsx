@@ -1,22 +1,22 @@
 import AddPaymentModal from '@/components/add-payment-modal';
 import AddPurchaseModal from '@/components/add-purchase-modal';
 import {
-    Customer,
-    TransactionWithProducts,
-    getCustomerById,
-    getCustomerTransactionsWithProducts,
+  Customer,
+  getCustomerById,
+  getCustomerTransactionsWithProducts,
+  TransactionWithProducts,
 } from '@/database';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
-    FlatList,
-    Image,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -105,35 +105,35 @@ export default function CustomerDetailScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <SafeAreaView style={styles.loadingContainer} edges={['top']}>
         <ActivityIndicator size="large" color="#4A90D9" />
-      </View>
+      </SafeAreaView>
     );
   }
 
   if (!customer) {
     return (
-      <View style={styles.errorContainer}>
+      <SafeAreaView style={styles.errorContainer} edges={['top']}>
         <MaterialIcons name="error-outline" size={48} color="#CBD5E1" />
         <Text style={styles.errorText}>Customer not found</Text>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <Stack.Screen
-        options={{
-          title: customer.name,
-          headerShown: true,
-          headerStyle: { backgroundColor: '#4A90D9' },
-          headerTintColor: '#fff',
-          headerTitleStyle: { fontWeight: '600' },
-        }}
-      />
+      <Stack.Screen options={{ headerShown: false }} />
 
       {/* Profile & Balance Hero */}
       <View style={styles.balanceCard}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+          activeOpacity={0.7}
+        >
+          <MaterialIcons name="arrow-back" size={22} color="#fff" />
+        </TouchableOpacity>
+
         {customer.photo_uri ? (
           <Image source={{ uri: customer.photo_uri }} style={styles.customerPhoto} />
         ) : (
@@ -141,6 +141,8 @@ export default function CustomerDetailScreen() {
             <Text style={styles.customerPhotoPlaceholderText}>{customer.name.charAt(0).toUpperCase()}</Text>
           </View>
         )}
+        <Text style={styles.customerName}>{customer.name}</Text>
+        {customer.phone && <Text style={styles.customerPhone}>{customer.phone}</Text>}
         <Text style={styles.balanceLabel}>Total Pending</Text>
         <Text
           style={[
@@ -152,6 +154,7 @@ export default function CustomerDetailScreen() {
         </Text>
       </View>
 
+      <View style={styles.contentArea}>
       {/* Action Buttons */}
       <View style={styles.actionButtons}>
         <TouchableOpacity
@@ -199,6 +202,8 @@ export default function CustomerDetailScreen() {
         />
       )}
 
+      </View>
+
       <AddPurchaseModal
         visible={showPurchaseModal}
         customerId={id}
@@ -222,34 +227,59 @@ export default function CustomerDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: '#4A90D9',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F1F5F9',
+    backgroundColor: '#4A90D9',
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F1F5F9',
+    backgroundColor: '#4A90D9',
     gap: 12,
   },
   errorText: {
     fontSize: 18,
-    color: '#64748B',
+    color: '#fff',
     fontWeight: '600',
   },
   // ── Profile Hero ──
+  backButton: {
+    position: 'absolute',
+    top: 12,
+    left: 16,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
   balanceCard: {
     backgroundColor: '#4A90D9',
-    paddingVertical: 28,
+    paddingTop: 48,
+    paddingBottom: 24,
     paddingHorizontal: 24,
     alignItems: 'center',
     borderBottomLeftRadius: 28,
     borderBottomRightRadius: 28,
+  },
+  customerName: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginTop: 2,
+  },
+  customerPhone: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.6)',
+    marginTop: 3,
+    marginBottom: 4,
   },
   customerPhoto: {
     width: 80,
@@ -290,6 +320,10 @@ const styles = StyleSheet.create({
   },
   balanceGreen: {
     color: '#86EFAC',
+  },
+  contentArea: {
+    flex: 1,
+    backgroundColor: '#F1F5F9',
   },
   // ── Action Buttons ──
   actionButtons: {

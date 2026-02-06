@@ -26,7 +26,8 @@ export default function MenuScreen() {
         <Text style={styles.subtitle}>Settings & info</Text>
       </View>
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <View style={styles.contentArea}>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Overview Cards */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>OVERVIEW</Text>
@@ -120,7 +121,8 @@ export default function MenuScreen() {
           <Text style={styles.footerText}>eKhata v1.0.0</Text>
           <Text style={styles.footerSubtext}>Made with ❤️ for local shopkeepers</Text>
         </View>
-      </ScrollView>
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -128,15 +130,19 @@ export default function MenuScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: '#4A90D9',
   },
   heroSection: {
     backgroundColor: '#4A90D9',
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 8,
     paddingBottom: 20,
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
+  },
+  contentArea: {
+    flex: 1,
+    backgroundColor: '#F1F5F9',
   },
   title: {
     fontSize: 26,

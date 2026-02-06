@@ -1,4 +1,5 @@
 import AddCustomerModal from '@/components/add-customer-modal';
+import LandingScreen from '@/components/landing-screen';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Tabs } from 'expo-router';
 import { useState } from 'react';
@@ -6,6 +7,11 @@ import { Platform, StyleSheet, View } from 'react-native';
 
 export default function TabLayout() {
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showLanding, setShowLanding] = useState(true);
+
+  if (showLanding) {
+    return <LandingScreen onGetStarted={() => setShowLanding(false)} />;
+  }
 
   return (
     <>

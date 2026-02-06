@@ -25,8 +25,9 @@ export default function LandingScreen({ onGetStarted }: LandingScreenProps) {
         <Text style={styles.subtitle}>Digital Khata for Your Shop</Text>
       </View>
 
-      {/* Features */}
-      <View style={styles.featuresContainer}>
+      <View style={styles.contentArea}>
+        {/* Features */}
+        <View style={styles.featuresContainer}>
         {features.map((f, i) => (
           <View key={i} style={styles.featureCard}>
             <View style={[styles.featureIconCircle, { backgroundColor: f.color + '18' }]}>
@@ -44,6 +45,7 @@ export default function LandingScreen({ onGetStarted }: LandingScreenProps) {
           <MaterialIcons name="arrow-forward" size={20} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.footerText}>Simple · Secure · Offline</Text>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -52,7 +54,7 @@ export default function LandingScreen({ onGetStarted }: LandingScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: '#4A90D9',
   },
   heroSection: {
     backgroundColor: '#4A90D9',
@@ -61,6 +63,10 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     borderBottomLeftRadius: 32,
     borderBottomRightRadius: 32,
+  },
+  contentArea: {
+    flex: 1,
+    backgroundColor: '#F1F5F9',
   },
   iconContainer: {
     width: 100,
