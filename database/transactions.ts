@@ -1,7 +1,7 @@
 import { updateCustomerPending } from './customers';
 import { getDatabase } from './init';
 import { addProducts, calculateProductsTotal, getProductsByTransaction } from './products';
-import { NewTransaction, Transaction, TransactionWithProducts } from './types';
+import { DaySummary, NewTransaction, PeriodSummary, Transaction, TransactionWithProducts } from './types';
 
 // Generate simple UUID
 const generateId = () => {
@@ -131,6 +131,102 @@ export const getCustomerTotalPayments = async (
   const result = await db.getFirstAsync<{ total: number }>(
     "SELECT COALESCE(SUM(amount), 0) as total FROM transactions WHERE customer_id = ? AND type = 'payment'",
     [customerId]
+  );
+  return result?.total || 0;
+};
+
+// ──── Dashboard Queries ────
+
+// Get summary for a date range
+export const getPeriodSummary = async (
+  startDate: string,
+  endDate: string
+): Promise<PeriodSummary> => {
+  const db = await getDatabase();
+
+  const purchases = await db.getFirstAsync<{ total: number }>(
+    "SELECT COALESCE(SUM(amount), 0) as total FROM transactions WHERE type = 'purchase' AND date BETWEEN ? AND ?",
+    [startDate, endDate]
+  );
+
+  const payments = await db.getFirstAsync<{ total: number }>(
+    "SELECT COALESCE(SUM(amount), 0) as total FROM transactions WHERE type = 'payment' AND date BETWEEN ? AND ?",
+    [startDate, endDate]
+  );
+
+  const count = await db.getFirstAsync<{ count: number }>(
+    'SELECT COUNT(*) as count FROM transactions WHERE date BETWEEN ? AND ?',
+    [startDate, endDate]
+  );
+
+  const totalPurchases = purchases?.total || 0;
+  const totalPayments = payments?.total || 0;
+
+  return {
+    totalPurchases,
+    totalPayments,
+    netBalance: totalPurchases - totalPayments,
+    transactionCount: count?.count || 0,
+  };
+};
+
+// Get day-by-day breakdown for a date range
+export const getDailyBreakdown = async (
+  startDate: string,
+  endDate: string
+): Promise<DaySummary[]> => {
+  const db = await getDatabase();
+
+  const rows = await db.getAllAsync<{
+    date: string;
+    type: string;
+    total: number;
+  }>(
+    'SELECT date, type, COALESCE(SUM(amount), 0) as total FROM transactions WHERE date BETWEEN ? AND ? GROUP BY date, type ORDER BY date DESC',
+    [startDate, endDate]
+  );
+
+  // Group by date
+  const dayMap = new Map<string, DaySummary>();
+
+  for (const row of rows) {
+    if (!dayMap.has(row.date)) {
+      dayMap.set(row.date, { date: row.date, purchases: 0, payments: 0 });
+    }
+    const day = dayMap.get(row.date)!;
+    if (row.type === 'purchase') {
+      day.purchases = row.total;
+    } else {
+      day.payments = row.total;
+    }
+  }
+
+  return Array.from(dayMap.values());
+};
+
+// Get top debtors (customers with highest pending)
+export const getTopDebtors = async (
+  limit: number = 5
+): Promise<{ id: string; name: string; phone?: string; photo_uri?: string; total_pending: number }[]> => {
+  const db = await getDatabase();
+  const result = await db.getAllAsync<{
+    id: string;
+    name: string;
+    phone?: string;
+    photo_uri?: string;
+    total_pending: number;
+  }>(
+    'SELECT id, name, phone, photo_uri, total_pending FROM customers WHERE total_pending > 0 ORDER BY total_pending DESC LIMIT ?',
+    [limit]
+  );
+  return result;
+};
+
+// Get total outstanding across all customers
+export const getTotalOutstanding = async (): Promise<number> => {
+  const db = await getDatabase();
+  const result = await db.getFirstAsync<{ total: number }>(
+    'SELECT COALESCE(SUM(total_pending), 0) as total FROM customers WHERE total_pending > 0'
   );
   return result?.total || 0;
 };

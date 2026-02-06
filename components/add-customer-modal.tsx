@@ -1,4 +1,5 @@
 import { addCustomer } from '@/database';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import {
@@ -105,52 +106,70 @@ export default function AddCustomerModal({
         style={styles.overlay}
       >
         <View style={styles.container}>
+          {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>Add Customer</Text>
-            <TouchableOpacity onPress={handleClose}>
-              <Text style={styles.closeButton}>✕</Text>
+            <View style={styles.headerLeft}>
+              <View style={styles.headerIconCircle}>
+                <MaterialIcons name="person-add" size={20} color="#fff" />
+              </View>
+              <Text style={styles.title}>Add Customer</Text>
+            </View>
+            <TouchableOpacity style={styles.closeBtn} onPress={handleClose}>
+              <MaterialIcons name="close" size={20} color="#94A3B8" />
             </TouchableOpacity>
           </View>
 
           <View style={styles.form}>
-            <Text style={styles.label}>Photo (Optional)</Text>
+            {/* Photo */}
             <TouchableOpacity style={styles.photoButton} onPress={showImagePicker}>
               {photoUri ? (
                 <Image source={{ uri: photoUri }} style={styles.photoPreview} />
               ) : (
                 <View style={styles.photoPlaceholder}>
-                  <Text style={styles.photoPlaceholderText}>📷</Text>
+                  <MaterialIcons name="camera-alt" size={28} color="#94A3B8" />
                   <Text style={styles.photoPlaceholderLabel}>Add Photo</Text>
                 </View>
               )}
             </TouchableOpacity>
 
+            {/* Name */}
             <Text style={styles.label}>Name *</Text>
-            <TextInput
-              style={styles.input}
-              value={name}
-              onChangeText={setName}
-              placeholder="Enter customer name"
-              autoFocus
-              editable={!saving}
-            />
+            <View style={styles.inputRow}>
+              <MaterialIcons name="person" size={20} color="#94A3B8" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                value={name}
+                onChangeText={setName}
+                placeholder="Enter customer name"
+                placeholderTextColor="#CBD5E1"
+                autoFocus
+                editable={!saving}
+              />
+            </View>
 
+            {/* Phone */}
             <Text style={styles.label}>Phone (Optional)</Text>
-            <TextInput
-              style={styles.input}
-              value={phone}
-              onChangeText={setPhone}
-              placeholder="Enter phone number"
-              keyboardType="phone-pad"
-              editable={!saving}
-            />
+            <View style={styles.inputRow}>
+              <MaterialIcons name="phone" size={20} color="#94A3B8" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                value={phone}
+                onChangeText={setPhone}
+                placeholder="Enter phone number"
+                placeholderTextColor="#CBD5E1"
+                keyboardType="phone-pad"
+                editable={!saving}
+              />
+            </View>
 
             <TouchableOpacity
               style={[styles.saveButton, saving && styles.saveButtonDisabled]}
               onPress={handleSave}
               disabled={saving}
+              activeOpacity={0.85}
             >
-              <Text style={styles.saveButtonText}>{saving ? 'Saving...' : 'Save'}</Text>
+              <MaterialIcons name="check" size={20} color="#fff" />
+              <Text style={styles.saveButtonText}>{saving ? 'Saving...' : 'Save Customer'}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -166,9 +185,9 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   container: {
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    backgroundColor: '#F8FAFC',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     paddingBottom: 40,
   },
   header: {
@@ -176,82 +195,114 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    paddingVertical: 18,
+    backgroundColor: '#4A90D9',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  headerIconCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#fff',
   },
-  closeButton: {
-    fontSize: 28,
-    color: '#666',
-    fontWeight: '300',
+  closeBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   form: {
     padding: 20,
   },
   label: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
-    marginTop: 12,
+    color: '#475569',
+    marginBottom: 6,
+    marginTop: 16,
   },
   photoButton: {
     alignItems: 'center',
-    marginBottom: 8,
+    marginVertical: 8,
   },
   photoPreview: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 2,
-    borderColor: '#007AFF',
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    borderWidth: 3,
+    borderColor: '#4A90D9',
   },
   photoPlaceholder: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: '#f0f0f0',
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: '#E2E8F0',
     borderWidth: 2,
-    borderColor: '#ddd',
+    borderColor: '#CBD5E1',
     borderStyle: 'dashed',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  photoPlaceholderText: {
-    fontSize: 32,
-    marginBottom: 4,
+    gap: 4,
   },
   photoPlaceholderLabel: {
-    fontSize: 12,
-    color: '#666',
+    fontSize: 11,
+    color: '#94A3B8',
+    fontWeight: '500',
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    paddingHorizontal: 14,
+  },
+  inputIcon: {
+    marginRight: 10,
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    flex: 1,
+    paddingVertical: 14,
     fontSize: 16,
-    backgroundColor: '#fff',
+    color: '#1E293B',
   },
   saveButton: {
-    backgroundColor: '#007AFF',
-    borderRadius: 8,
+    backgroundColor: '#4A90D9',
+    borderRadius: 14,
     paddingVertical: 16,
     alignItems: 'center',
-    marginTop: 24,
+    marginTop: 28,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
+    shadowColor: '#4A90D9',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   saveButtonDisabled: {
-    backgroundColor: '#ccc',
+    backgroundColor: '#94A3B8',
   },
   saveButtonText: {
     color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: 'bold',
   },
 });

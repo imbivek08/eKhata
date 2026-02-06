@@ -1,3 +1,4 @@
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -6,47 +7,43 @@ interface LandingScreenProps {
 }
 
 export default function LandingScreen({ onGetStarted }: LandingScreenProps) {
+  const features = [
+    { icon: 'receipt-long' as const, text: 'Track customer purchases', color: '#E11D48' },
+    { icon: 'payments' as const, text: 'Record payments easily', color: '#16A34A' },
+    { icon: 'cloud-off' as const, text: 'Works offline — always', color: '#2563EB' },
+    { icon: 'lock' as const, text: 'Your data stays on device', color: '#D97706' },
+  ];
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
+      {/* Top wave section */}
+      <View style={styles.heroSection}>
         <View style={styles.iconContainer}>
           <Text style={styles.icon}>📒</Text>
         </View>
-        
-        <Text style={styles.title}>Ekhata</Text>
+        <Text style={styles.title}>eKhata</Text>
         <Text style={styles.subtitle}>Digital Khata for Your Shop</Text>
-        
-        <View style={styles.featuresContainer}>
-          <View style={styles.feature}>
-            <Text style={styles.featureIcon}>✓</Text>
-            <Text style={styles.featureText}>Track customer purchases</Text>
-          </View>
-          
-          <View style={styles.feature}>
-            <Text style={styles.featureIcon}>✓</Text>
-            <Text style={styles.featureText}>Record payments easily</Text>
-          </View>
-          
-          <View style={styles.feature}>
-            <Text style={styles.featureIcon}>✓</Text>
-            <Text style={styles.featureText}>Never lose your khata</Text>
-          </View>
-          
-          <View style={styles.feature}>
-            <Text style={styles.featureIcon}>✓</Text>
-            <Text style={styles.featureText}>Works offline</Text>
-          </View>
-        </View>
       </View>
 
+      {/* Features */}
+      <View style={styles.featuresContainer}>
+        {features.map((f, i) => (
+          <View key={i} style={styles.featureCard}>
+            <View style={[styles.featureIconCircle, { backgroundColor: f.color + '18' }]}>
+              <MaterialIcons name={f.icon} size={22} color={f.color} />
+            </View>
+            <Text style={styles.featureText}>{f.text}</Text>
+          </View>
+        ))}
+      </View>
+
+      {/* Footer */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.button} onPress={onGetStarted}>
+        <TouchableOpacity style={styles.button} onPress={onGetStarted} activeOpacity={0.85}>
           <Text style={styles.buttonText}>Get Started</Text>
+          <MaterialIcons name="arrow-forward" size={20} color="#fff" />
         </TouchableOpacity>
-        
-        <Text style={styles.footerText}>
-          Simple. Secure. Offline.
-        </Text>
+        <Text style={styles.footerText}>Simple · Secure · Offline</Text>
       </View>
     </SafeAreaView>
   );
@@ -55,74 +52,90 @@ export default function LandingScreen({ onGetStarted }: LandingScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F1F5F9',
   },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
+  heroSection: {
+    backgroundColor: '#4A90D9',
     alignItems: 'center',
-    paddingHorizontal: 32,
+    paddingTop: 48,
+    paddingBottom: 40,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
   },
   iconContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: '#F0F8FF',
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'rgba(255,255,255,0.12)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 20,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.15)',
   },
   icon: {
-    fontSize: 64,
+    fontSize: 52,
   },
   title: {
-    fontSize: 48,
+    fontSize: 40,
     fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
+    color: '#fff',
+    marginBottom: 6,
   },
   subtitle: {
-    fontSize: 18,
-    color: '#666',
-    marginBottom: 48,
-    textAlign: 'center',
+    fontSize: 16,
+    color: '#94A3B8',
+    fontWeight: '500',
   },
   featuresContainer: {
-    width: '100%',
-    maxWidth: 300,
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+    gap: 12,
   },
-  feature: {
+  featureCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 16,
+    gap: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 1,
   },
-  featureIcon: {
-    fontSize: 24,
-    color: '#34C759',
-    marginRight: 12,
-    fontWeight: 'bold',
+  featureIconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   featureText: {
     fontSize: 16,
-    color: '#333',
+    fontWeight: '500',
+    color: '#1E293B',
+    flex: 1,
   },
   footer: {
-    paddingHorizontal: 32,
-    paddingBottom: 48,
+    paddingHorizontal: 24,
+    paddingBottom: 36,
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#4A90D9',
     borderRadius: 16,
     paddingVertical: 18,
     alignItems: 'center',
-    marginBottom: 16,
-    shadowColor: '#007AFF',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+    marginBottom: 14,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
+    shadowColor: '#4A90D9',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
     elevation: 8,
   },
   buttonText: {
@@ -132,7 +145,8 @@ const styles = StyleSheet.create({
   },
   footerText: {
     textAlign: 'center',
-    fontSize: 14,
-    color: '#999',
+    fontSize: 13,
+    color: '#94A3B8',
+    fontWeight: '500',
   },
 });

@@ -1,7 +1,7 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import 'react-native-reanimated';
 
 import { initDatabase } from '@/database';
@@ -27,7 +27,10 @@ export default function RootLayout() {
   if (error) {
     return (
       <View style={styles.loading}>
-        <Text style={styles.errorText}>{error}</Text>
+        <View style={styles.errorCard}>
+          <Text style={styles.errorIcon}>⚠️</Text>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
       </View>
     );
   }
@@ -35,7 +38,9 @@ export default function RootLayout() {
   if (!dbInitialized) {
     return (
       <View style={styles.loading}>
-        <Text>Loading...</Text>
+        <Text style={styles.loadingIcon}>📒</Text>
+        <ActivityIndicator size="large" color="#4A90D9" style={{ marginTop: 20 }} />
+        <Text style={styles.loadingText}>Loading eKhata...</Text>
       </View>
     );
   }
@@ -44,8 +49,9 @@ export default function RootLayout() {
     <>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="customer/[id]" options={{ headerShown: false }} />
       </Stack>
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
     </>
   );
 }
@@ -55,12 +61,38 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#4A90D9',
+  },
+  loadingIcon: {
+    fontSize: 64,
+  },
+  loadingText: {
+    color: '#94A3B8',
+    fontSize: 16,
+    marginTop: 14,
+    fontWeight: '500',
+  },
+  errorCard: {
     backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 28,
+    marginHorizontal: 32,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  errorIcon: {
+    fontSize: 40,
+    marginBottom: 12,
   },
   errorText: {
-    color: '#FF3B30',
+    color: '#E11D48',
     fontSize: 16,
     textAlign: 'center',
-    paddingHorizontal: 40,
+    fontWeight: '500',
+    lineHeight: 22,
   },
 });

@@ -51,3 +51,24 @@ export interface NewProduct {
 export interface TransactionWithProducts extends Transaction {
   products: Product[];
 }
+
+export interface PeriodSummary {
+  totalPurchases: number;
+  totalPayments: number;
+  netBalance: number;
+  transactionCount: number;
+}
+
+export interface DaySummary {
+  date: string;
+  purchases: number;
+  payments: number;
+}
+
+export interface TopDebtor {
+  id: string;
+  name: string;
+  phone?: string;
+  photo_uri?: string;
+  total_pending: number;
+}

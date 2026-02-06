@@ -6,6 +6,7 @@ import {
     getCustomerById,
     getCustomerTransactionsWithProducts,
 } from '@/database';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
@@ -56,14 +57,20 @@ export default function CustomerDetailScreen() {
   const renderTransaction = ({ item }: { item: TransactionWithProducts }) => (
     <View style={styles.transactionCard}>
       <View style={styles.transactionHeader}>
-        <Text style={styles.transactionDate}>{formatDate(item.date)}</Text>
+        <View style={styles.transactionLeft}>
+          <View style={[
+            styles.transactionDot,
+            { backgroundColor: item.type === 'purchase' ? '#E11D48' : '#16A34A' }
+          ]} />
+          <Text style={styles.transactionDate}>{formatDate(item.date)}</Text>
+        </View>
         <Text
           style={[
             styles.transactionAmount,
             item.type === 'payment' ? styles.paymentAmount : styles.purchaseAmount,
           ]}
         >
-          {item.type === 'payment' ? '-' : ''}₹{item.amount.toFixed(0)}
+          {item.type === 'payment' ? '-' : '+'}₹{item.amount.toFixed(0)}
         </Text>
       </View>
 
@@ -84,7 +91,10 @@ export default function CustomerDetailScreen() {
       )}
 
       {item.type === 'payment' && (
-        <Text style={styles.paymentLabel}>Payment Received</Text>
+        <View style={styles.paymentBadge}>
+          <MaterialIcons name="check-circle" size={14} color="#16A34A" />
+          <Text style={styles.paymentLabel}>Payment Received</Text>
+        </View>
       )}
 
       {item.description && (
@@ -96,7 +106,7 @@ export default function CustomerDetailScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color="#4A90D9" />
       </View>
     );
   }
@@ -104,6 +114,7 @@ export default function CustomerDetailScreen() {
   if (!customer) {
     return (
       <View style={styles.errorContainer}>
+        <MaterialIcons name="error-outline" size={48} color="#CBD5E1" />
         <Text style={styles.errorText}>Customer not found</Text>
       </View>
     );
@@ -115,9 +126,13 @@ export default function CustomerDetailScreen() {
         options={{
           title: customer.name,
           headerShown: true,
+          headerStyle: { backgroundColor: '#4A90D9' },
+          headerTintColor: '#fff',
+          headerTitleStyle: { fontWeight: '600' },
         }}
       />
 
+      {/* Profile & Balance Hero */}
       <View style={styles.balanceCard}>
         {customer.photo_uri ? (
           <Image source={{ uri: customer.photo_uri }} style={styles.customerPhoto} />
@@ -130,43 +145,47 @@ export default function CustomerDetailScreen() {
         <Text
           style={[
             styles.balanceAmount,
-            customer.total_pending > 0 ? styles.balanceRed : styles.balanceGray,
+            customer.total_pending > 0 ? styles.balanceRed : styles.balanceGreen,
           ]}
         >
           ₹{customer.total_pending.toFixed(0)}
         </Text>
       </View>
 
+      {/* Action Buttons */}
       <View style={styles.actionButtons}>
         <TouchableOpacity
           style={styles.purchaseButton}
-          onPress={() => {
-            console.log('Add Products button pressed');
-            console.log('Customer ID:', id);
-            console.log('Customer name:', customer.name);
-            setShowPurchaseModal(true);
-          }}
+          onPress={() => setShowPurchaseModal(true)}
+          activeOpacity={0.8}
         >
+          <MaterialIcons name="add-shopping-cart" size={20} color="#fff" />
           <Text style={styles.buttonText}>Add Products</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.paymentButton}
-          onPress={() => {
-            console.log('Receive Payment button pressed');
-            setShowPaymentModal(true);
-          }}
+          onPress={() => setShowPaymentModal(true)}
+          activeOpacity={0.8}
         >
+          <MaterialIcons name="payments" size={20} color="#fff" />
           <Text style={styles.buttonText}>Receive Payment</Text>
         </TouchableOpacity>
       </View>
 
+      {/* History */}
       <View style={styles.historyHeader}>
-        <Text style={styles.historyTitle}>History</Text>
+        <Text style={styles.historyTitle}>📋 Transaction History</Text>
+        <View style={styles.historyCountBadge}>
+          <Text style={styles.historyCountText}>{transactions.length}</Text>
+        </View>
       </View>
 
       {transactions.length === 0 ? (
         <View style={styles.emptyState}>
+          <View style={styles.emptyIconCircle}>
+            <MaterialIcons name="receipt-long" size={32} color="#CBD5E1" />
+          </View>
           <Text style={styles.emptyText}>No transactions yet</Text>
           <Text style={styles.emptySubtext}>Record a purchase to get started</Text>
         </View>
@@ -176,6 +195,7 @@ export default function CustomerDetailScreen() {
           renderItem={renderTransaction}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.list}
+          showsVerticalScrollIndicator={false}
         />
       )}
 
@@ -202,186 +222,259 @@ export default function CustomerDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F1F5F9',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#F1F5F9',
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#F1F5F9',
+    gap: 12,
   },
   errorText: {
     fontSize: 18,
-    color: '#666',
+    color: '#64748B',
+    fontWeight: '600',
   },
+  // ── Profile Hero ──
   balanceCard: {
-    backgroundColor: '#f9f9f9',
-    padding: 24,
-    paddingTop: 32,
+    backgroundColor: '#4A90D9',
+    paddingVertical: 28,
+    paddingHorizontal: 24,
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
   },
   customerPhoto: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    marginBottom: 16,
+    marginBottom: 14,
     borderWidth: 3,
-    borderColor: '#fff',
+    borderColor: 'rgba(255,255,255,0.3)',
   },
   customerPhotoPlaceholder: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    marginBottom: 16,
-    backgroundColor: '#007AFF',
+    marginBottom: 14,
+    backgroundColor: 'rgba(255,255,255,0.15)',
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 3,
+    borderColor: 'rgba(255,255,255,0.2)',
   },
   customerPhotoPlaceholderText: {
-    fontSize: 36,
+    fontSize: 32,
     fontWeight: 'bold',
     color: '#fff',
   },
   balanceLabel: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 8,
+    fontSize: 14,
+    color: '#94A3B8',
+    marginBottom: 6,
+    fontWeight: '500',
   },
   balanceAmount: {
-    fontSize: 48,
+    fontSize: 44,
     fontWeight: 'bold',
   },
   balanceRed: {
-    color: '#FF3B30',
+    color: '#FCA5A5',
   },
-  balanceGray: {
-    color: '#999',
+  balanceGreen: {
+    color: '#86EFAC',
   },
+  // ── Action Buttons ──
   actionButtons: {
     flexDirection: 'row',
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
     gap: 12,
   },
   purchaseButton: {
     flex: 1,
-    backgroundColor: '#FF3B30',
-    borderRadius: 8,
-    paddingVertical: 16,
+    backgroundColor: '#E11D48',
+    borderRadius: 14,
+    paddingVertical: 14,
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
+    shadowColor: '#E11D48',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 4,
   },
   paymentButton: {
     flex: 1,
-    backgroundColor: '#34C759',
-    borderRadius: 8,
-    paddingVertical: 16,
+    backgroundColor: '#16A34A',
+    borderRadius: 14,
+    paddingVertical: 14,
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
+    shadowColor: '#16A34A',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 4,
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '700',
   },
+  // ── History ──
   historyHeader: {
-    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
     paddingVertical: 12,
-    backgroundColor: '#f9f9f9',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
   },
   historyTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#1E293B',
+  },
+  historyCountBadge: {
+    backgroundColor: '#4A90D9',
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 12,
+  },
+  historyCountText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#fff',
   },
   list: {
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
   },
   transactionCard: {
-    backgroundColor: '#f9f9f9',
-    borderRadius: 12,
+    backgroundColor: '#fff',
+    borderRadius: 14,
     padding: 16,
-    marginBottom: 12,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 1,
   },
   transactionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 6,
+  },
+  transactionLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  transactionDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
   transactionDate: {
     fontSize: 14,
-    color: '#666',
+    color: '#64748B',
+    fontWeight: '500',
   },
   transactionAmount: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
   },
   purchaseAmount: {
-    color: '#FF3B30',
+    color: '#E11D48',
   },
   paymentAmount: {
-    color: '#34C759',
+    color: '#16A34A',
   },
   productsContainer: {
-    marginTop: 8,
-    paddingTop: 8,
+    marginTop: 10,
+    paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
+    borderTopColor: '#F1F5F9',
   },
   productRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 4,
+    paddingVertical: 5,
   },
   productInfo: {
     flex: 1,
   },
   productName: {
     fontSize: 14,
-    color: '#333',
+    color: '#1E293B',
+    fontWeight: '500',
   },
   productQuantity: {
     fontSize: 12,
-    color: '#999',
+    color: '#94A3B8',
     marginTop: 2,
   },
   productAmount: {
     fontSize: 14,
-    color: '#666',
-    fontWeight: '500',
+    color: '#64748B',
+    fontWeight: '600',
   },
-  paymentLabel: {
-    fontSize: 14,
-    color: '#34C759',
-    fontWeight: '500',
-  },
-  transactionDescription: {
-    fontSize: 14,
-    color: '#666',
+  paymentBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
     marginTop: 4,
   },
+  paymentLabel: {
+    fontSize: 13,
+    color: '#16A34A',
+    fontWeight: '600',
+  },
+  transactionDescription: {
+    fontSize: 13,
+    color: '#94A3B8',
+    marginTop: 6,
+    fontStyle: 'italic',
+  },
+  // ── Empty ──
   emptyState: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 40,
   },
+  emptyIconCircle: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#E2E8F0',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 14,
+  },
   emptyText: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '600',
-    color: '#666',
-    marginBottom: 8,
+    color: '#64748B',
+    marginBottom: 6,
   },
   emptySubtext: {
     fontSize: 14,
-    color: '#999',
+    color: '#94A3B8',
     textAlign: 'center',
   },
 });

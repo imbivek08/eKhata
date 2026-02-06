@@ -4,7 +4,8 @@ export { getDatabase, initDatabase } from './init';
 // Export types
 export type {
     Customer,
-    NewCustomer, NewProduct, NewTransaction, Product, Transaction, TransactionWithProducts
+    DaySummary,
+    NewCustomer, NewProduct, NewTransaction, PeriodSummary, Product, TopDebtor, Transaction, TransactionWithProducts
 } from './types';
 
 // Export customer operations
@@ -19,7 +20,11 @@ export {
     getCustomerTotalPayments,
     getCustomerTotalPurchases,
     getCustomerTransactions,
-    getCustomerTransactionsWithProducts
+    getCustomerTransactionsWithProducts,
+    getDailyBreakdown,
+    getPeriodSummary,
+    getTopDebtors,
+    getTotalOutstanding
 } from './transactions';
 
 // Export product operations
