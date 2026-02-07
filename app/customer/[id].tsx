@@ -1,6 +1,8 @@
 import AddPaymentModal from '@/components/add-payment-modal';
 import AddPurchaseModal from '@/components/add-purchase-modal';
+import EditCustomerModal from '@/components/edit-customer-modal';
 import {
+  archiveCustomer,
   Customer,
   getCustomerById,
   getCustomerTransactionsWithProducts,
@@ -11,6 +13,7 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   Image,
   StyleSheet,
@@ -28,6 +31,7 @@ export default function CustomerDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const loadData = async () => {
     if (!id) return;
@@ -48,6 +52,30 @@ export default function CustomerDetailScreen() {
   useEffect(() => {
     loadData();
   }, [id]);
+
+  const handleArchive = () => {
+    if (!customer) return;
+    Alert.alert(
+      'Archive Customer',
+      `Are you sure you want to archive "${customer.name}"?\n\nThis will hide them from your main list, but all transaction data will be preserved. You can restore them anytime from Menu → Archived Customers.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Archive',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await archiveCustomer(customer.id);
+              router.back();
+            } catch (error) {
+              Alert.alert('Error', 'Failed to archive customer');
+              console.error(error);
+            }
+          },
+        },
+      ]
+    );
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -133,6 +161,24 @@ export default function CustomerDetailScreen() {
         >
           <MaterialIcons name="arrow-back" size={22} color="#fff" />
         </TouchableOpacity>
+
+        {/* Edit & Archive Buttons (top-right) */}
+        <View style={styles.heroActions}>
+          <TouchableOpacity
+            style={styles.heroActionBtn}
+            onPress={() => setShowEditModal(true)}
+            activeOpacity={0.7}
+          >
+            <MaterialIcons name="edit" size={18} color="#fff" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.heroActionBtn}
+            onPress={handleArchive}
+            activeOpacity={0.7}
+          >
+            <MaterialIcons name="archive" size={18} color="#fff" />
+          </TouchableOpacity>
+        </View>
 
         {customer.photo_uri ? (
           <Image source={{ uri: customer.photo_uri }} style={styles.customerPhoto} />
@@ -220,6 +266,13 @@ export default function CustomerDetailScreen() {
         onClose={() => setShowPaymentModal(false)}
         onPaymentAdded={loadData}
       />
+
+      <EditCustomerModal
+        visible={showEditModal}
+        customer={customer}
+        onClose={() => setShowEditModal(false)}
+        onCustomerUpdated={loadData}
+      />
     </SafeAreaView>
   );
 }
@@ -259,6 +312,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,
+  },
+  heroActions: {
+    position: 'absolute',
+    top: 12,
+    right: 16,
+    flexDirection: 'row',
+    gap: 8,
+    zIndex: 10,
+  },
+  heroActionBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   balanceCard: {
     backgroundColor: '#4A90D9',

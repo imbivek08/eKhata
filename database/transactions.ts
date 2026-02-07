@@ -204,7 +204,7 @@ export const getDailyBreakdown = async (
   return Array.from(dayMap.values());
 };
 
-// Get top debtors (customers with highest pending)
+// Get top debtors (customers with highest pending, excluding archived)
 export const getTopDebtors = async (
   limit: number = 5
 ): Promise<{ id: string; name: string; phone?: string; photo_uri?: string; total_pending: number }[]> => {
@@ -216,17 +216,17 @@ export const getTopDebtors = async (
     photo_uri?: string;
     total_pending: number;
   }>(
-    'SELECT id, name, phone, photo_uri, total_pending FROM customers WHERE total_pending > 0 ORDER BY total_pending DESC LIMIT ?',
+    'SELECT id, name, phone, photo_uri, total_pending FROM customers WHERE total_pending > 0 AND deleted_at IS NULL ORDER BY total_pending DESC LIMIT ?',
     [limit]
   );
   return result;
 };
 
-// Get total outstanding across all customers
+// Get total outstanding across all active customers (excluding archived)
 export const getTotalOutstanding = async (): Promise<number> => {
   const db = await getDatabase();
   const result = await db.getFirstAsync<{ total: number }>(
-    'SELECT COALESCE(SUM(total_pending), 0) as total FROM customers WHERE total_pending > 0'
+    'SELECT COALESCE(SUM(total_pending), 0) as total FROM customers WHERE total_pending > 0 AND deleted_at IS NULL'
   );
   return result?.total || 0;
 };

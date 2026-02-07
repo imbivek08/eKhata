@@ -50,6 +50,7 @@ export default function RootLayout() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="customer/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="archived" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="light" />
     </>

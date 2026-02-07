@@ -4,8 +4,15 @@ export interface Customer {
   phone?: string;
   photo_uri?: string;
   total_pending: number;
+  deleted_at?: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface UpdateCustomerData {
+  name: string;
+  phone?: string;
+  photo_uri?: string;
 }
 
 export interface Transaction {

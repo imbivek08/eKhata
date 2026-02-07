@@ -97,11 +97,8 @@ const styles = StyleSheet.create({
     paddingTop: 4,
     backgroundColor: '#fff',
     borderTopWidth: 0,
-    elevation: 12,
-    shadowColor: '#4A90D9',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
+    elevation: 0,
+    shadowOpacity: 0,
   },
   tabBarLabel: {
     fontSize: 11,

@@ -8,10 +8,22 @@ export type {
     NewCustomer, NewProduct, NewTransaction, PeriodSummary, Product, TopDebtor, Transaction, TransactionWithProducts
 } from './types';
 
+// Export types for update
+export type { UpdateCustomerData } from './types';
+
 // Export customer operations
 export {
-    addCustomer, deleteCustomer, getAllCustomers,
-    getCustomerById, updateCustomerPending
+    addCustomer,
+    archiveCustomer,
+    deleteCustomer,
+    getAllCustomers,
+    getArchivedCount,
+    getArchivedCustomers,
+    getCustomerById,
+    permanentlyDeleteCustomer,
+    restoreCustomer,
+    updateCustomer,
+    updateCustomerPending
 } from './customers';
 
 // Export transaction operations

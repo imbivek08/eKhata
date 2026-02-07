@@ -75,6 +75,15 @@ export const initDatabase = async () => {
     // Column already exists, ignore error
   }
 
+  // Migration: Add deleted_at column for soft delete (archive)
+  try {
+    await db.execAsync(`
+      ALTER TABLE customers ADD COLUMN deleted_at TEXT;
+    `);
+  } catch (error) {
+    // Column already exists, ignore error
+  }
+
   dbInstance = db;
   return db;
 };

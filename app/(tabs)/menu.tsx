@@ -1,22 +1,29 @@
-import { getAllCustomers } from '@/database';
+import { getAllCustomers, getArchivedCount } from '@/database';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useEffect, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { router } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function MenuScreen() {
   const [totalCustomers, setTotalCustomers] = useState(0);
   const [totalPending, setTotalPending] = useState(0);
+  const [archivedCount, setArchivedCount] = useState(0);
 
-  useEffect(() => {
-    const load = async () => {
-      const customers = await getAllCustomers();
-      setTotalCustomers(customers.length);
-      const pending = customers.reduce((sum, c) => sum + c.total_pending, 0);
-      setTotalPending(pending);
-    };
-    load();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const load = async () => {
+        const customers = await getAllCustomers();
+        setTotalCustomers(customers.length);
+        const pending = customers.reduce((sum, c) => sum + c.total_pending, 0);
+        setTotalPending(pending);
+        const archived = await getArchivedCount();
+        setArchivedCount(archived);
+      };
+      load();
+    }, [])
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -48,6 +55,33 @@ export default function MenuScreen() {
               </Text>
               <Text style={styles.overviewLabel}>Total Pending</Text>
             </View>
+          </View>
+        </View>
+
+        {/* Archived Customers */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>CUSTOMERS</Text>
+          <View style={styles.menuCard}>
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => router.push('/archived' as any)}
+              activeOpacity={0.6}
+            >
+              <View style={styles.menuItemLeft}>
+                <View style={[styles.menuIconCircle, { backgroundColor: '#FEF3C7' }]}>
+                  <MaterialIcons name="archive" size={20} color="#D97706" />
+                </View>
+                <Text style={styles.menuItemLabel}>Archived Customers</Text>
+              </View>
+              <View style={styles.menuItemRight}>
+                {archivedCount > 0 && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>{archivedCount}</Text>
+                  </View>
+                )}
+                <MaterialIcons name="chevron-right" size={22} color="#CBD5E1" />
+              </View>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -242,6 +276,25 @@ const styles = StyleSheet.create({
     height: StyleSheet.hairlineWidth,
     backgroundColor: '#F1F5F9',
     marginLeft: 64,
+  },
+  menuItemRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  badge: {
+    backgroundColor: '#D97706',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 6,
+  },
+  badgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#fff',
   },
   menuItemValue: {
     fontSize: 16,
