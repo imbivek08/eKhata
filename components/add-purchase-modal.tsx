@@ -1,15 +1,16 @@
 import { addTransaction, NewProduct } from '@/database';
+import { useI18n } from '@/hooks/use-i18n';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useState } from 'react';
 import {
-  Alert,
-  Modal,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View
+    Alert,
+    Modal,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
 } from 'react-native';
 
 interface AddPurchaseModalProps {
@@ -27,6 +28,7 @@ export default function AddPurchaseModal({
   onClose,
   onPurchaseAdded,
 }: AddPurchaseModalProps) {
+  const { t } = useI18n();
   const [products, setProducts] = useState<NewProduct[]>([
     { product_name: '', quantity: '', amount: 0 },
   ]);
@@ -38,7 +40,7 @@ export default function AddPurchaseModal({
 
   const removeProductRow = (index: number) => {
     if (products.length === 1) {
-      Alert.alert('Error', 'At least one product is required');
+      Alert.alert(t('common', 'error'), t('addPurchase', 'atLeastOne'));
       return;
     }
     const newProducts = products.filter((_, i) => i !== index);
@@ -65,7 +67,7 @@ export default function AddPurchaseModal({
     );
 
     if (validProducts.length === 0) {
-      Alert.alert('Error', 'Please add at least one product with name and amount');
+      Alert.alert(t('common', 'error'), t('addPurchase', 'addProductError'));
       return;
     }
 
@@ -82,7 +84,7 @@ export default function AddPurchaseModal({
       onClose();
     } catch (error) {
       console.error('Error adding purchase:', error);
-      Alert.alert('Error', 'Failed to add purchase: ' + (error as Error).message);
+      Alert.alert(t('common', 'error'), t('addPurchase', 'failedToAdd') + ': ' + (error as Error).message);
     } finally {
       setSaving(false);
     }
@@ -111,7 +113,7 @@ export default function AddPurchaseModal({
                 <MaterialIcons name="shopping-cart" size={20} color="#fff" />
               </View>
               <View>
-                <Text style={styles.title}>Add Products</Text>
+                <Text style={styles.title}>{t('addPurchase', 'title')}</Text>
                 <Text style={styles.subtitle}>{customerName}</Text>
               </View>
             </View>
@@ -128,7 +130,7 @@ export default function AddPurchaseModal({
             {/* Product Rows */}
             <View style={styles.sectionHeader}>
               <MaterialIcons name="inventory" size={18} color="#475569" />
-              <Text style={styles.sectionTitle}>Products</Text>
+              <Text style={styles.sectionTitle}>{t('addPurchase', 'products')}</Text>
             </View>
 
             {products.map((product, index) => (
@@ -141,7 +143,7 @@ export default function AddPurchaseModal({
                     style={[styles.input, styles.productNameInput]}
                     value={product.product_name}
                     onChangeText={(value) => updateProduct(index, 'product_name', value)}
-                    placeholder="Product name"
+                    placeholder={t('addPurchase', 'productName')}
                     placeholderTextColor="#CBD5E1"
                     editable={!saving}
                   />
@@ -150,7 +152,7 @@ export default function AddPurchaseModal({
                       style={[styles.input, styles.quantityInput]}
                       value={product.quantity || ''}
                       onChangeText={(value) => updateProduct(index, 'quantity', value)}
-                      placeholder="Qty"
+                      placeholder={t('addPurchase', 'qty')}
                       placeholderTextColor="#CBD5E1"
                       editable={!saving}
                     />
@@ -158,7 +160,7 @@ export default function AddPurchaseModal({
                       style={[styles.input, styles.amountInput]}
                       value={product.amount > 0 ? product.amount.toString() : ''}
                       onChangeText={(value) => updateProduct(index, 'amount', value)}
-                      placeholder="₹ Amount"
+                      placeholder={t('addPurchase', 'amount')}
                       placeholderTextColor="#CBD5E1"
                       keyboardType="numeric"
                       editable={!saving}
@@ -183,14 +185,14 @@ export default function AddPurchaseModal({
               activeOpacity={0.7}
             >
               <MaterialIcons name="add-circle-outline" size={20} color="#4A90D9" />
-              <Text style={styles.addProductButtonText}>Add Another Product</Text>
+              <Text style={styles.addProductButtonText}>{t('addPurchase', 'addAnother')}</Text>
             </TouchableOpacity>
 
             {/* Total */}
             <View style={styles.totalContainer}>
               <View style={styles.totalLeft}>
                 <MaterialIcons name="receipt" size={22} color="#E11D48" />
-                <Text style={styles.totalLabel}>Total Amount</Text>
+                <Text style={styles.totalLabel}>{t('addPurchase', 'totalAmount')}</Text>
               </View>
               <Text style={styles.totalAmount}>₹{total.toFixed(0)}</Text>
             </View>
@@ -203,7 +205,7 @@ export default function AddPurchaseModal({
             >
               <MaterialIcons name="check" size={20} color="#fff" />
               <Text style={styles.saveButtonText}>
-                {saving ? 'Saving...' : 'Save Purchase'}
+                {saving ? t('common', 'saving') : t('addPurchase', 'savePurchase')}
               </Text>
             </TouchableOpacity>
           </ScrollView>

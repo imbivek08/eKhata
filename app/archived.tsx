@@ -1,25 +1,27 @@
 import {
-    Customer,
-    getArchivedCustomers,
-    permanentlyDeleteCustomer,
-    restoreCustomer,
+  Customer,
+  getArchivedCustomers,
+  permanentlyDeleteCustomer,
+  restoreCustomer,
 } from '@/database';
+import { useI18n } from '@/hooks/use-i18n';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useFocusEffect } from '@react-navigation/native';
 import { router, Stack } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
-    Alert,
-    FlatList,
-    Image,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ArchivedCustomersScreen() {
+  const { t } = useI18n();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -42,18 +44,18 @@ export default function ArchivedCustomersScreen() {
 
   const handleRestore = (customer: Customer) => {
     Alert.alert(
-      'Restore Customer',
-      `Restore "${customer.name}" to your active customers list?`,
+      t('archived', 'restoreTitle'),
+      t('archived', 'restoreMessage', { name: customer.name }),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common', 'cancel'), style: 'cancel' },
         {
-          text: 'Restore',
+          text: t('archived', 'restore'),
           onPress: async () => {
             try {
               await restoreCustomer(customer.id);
               loadArchived();
             } catch (error) {
-              Alert.alert('Error', 'Failed to restore customer');
+              Alert.alert(t('common', 'error'), t('archived', 'restoreError'));
             }
           },
         },
@@ -63,29 +65,29 @@ export default function ArchivedCustomersScreen() {
 
   const handlePermanentDelete = (customer: Customer) => {
     Alert.alert(
-      '⚠️ Delete Forever',
-      `This will PERMANENTLY erase "${customer.name}" and ALL their transaction records.\n\nThis action cannot be undone!`,
+      t('archived', 'deleteForeverTitle'),
+      t('archived', 'deleteForeverMessage', { name: customer.name }),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common', 'cancel'), style: 'cancel' },
         {
-          text: 'Delete Forever',
+          text: t('archived', 'deleteForever'),
           style: 'destructive',
           onPress: () => {
             // Second confirmation for safety
             Alert.alert(
-              'Are you absolutely sure?',
-              `All data for "${customer.name}" will be lost forever.`,
+              t('archived', 'confirmTitle'),
+              t('archived', 'confirmMessage', { name: customer.name }),
               [
-                { text: 'No, Keep It', style: 'cancel' },
+                { text: t('archived', 'noKeepIt'), style: 'cancel' },
                 {
-                  text: 'Yes, Delete',
+                  text: t('archived', 'yesDelete'),
                   style: 'destructive',
                   onPress: async () => {
                     try {
                       await permanentlyDeleteCustomer(customer.id);
                       loadArchived();
                     } catch (error) {
-                      Alert.alert('Error', 'Failed to delete customer');
+                      Alert.alert(t('common', 'error'), t('archived', 'deleteError'));
                     }
                   },
                 },
@@ -124,11 +126,11 @@ export default function ArchivedCustomersScreen() {
             <Text style={styles.customerPhone}>{item.phone}</Text>
           )}
           <Text style={styles.archivedDate}>
-            Archived {item.deleted_at ? formatDate(item.deleted_at) : ''}
+            {t('archived', 'archived')} {item.deleted_at ? formatDate(item.deleted_at) : ''}
           </Text>
           {item.total_pending > 0 && (
             <Text style={styles.pendingAmount}>
-              ₹{item.total_pending.toFixed(0)} pending
+              ₹{item.total_pending.toFixed(0)} {t('archived', 'pendingLabel')}
             </Text>
           )}
         </View>
@@ -141,7 +143,7 @@ export default function ArchivedCustomersScreen() {
           activeOpacity={0.8}
         >
           <MaterialIcons name="restore" size={18} color="#16A34A" />
-          <Text style={styles.restoreBtnText}>Restore</Text>
+          <Text style={styles.restoreBtnText}>{t('archived', 'restore')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -150,7 +152,7 @@ export default function ArchivedCustomersScreen() {
           activeOpacity={0.8}
         >
           <MaterialIcons name="delete-forever" size={18} color="#E11D48" />
-          <Text style={styles.deleteBtnText}>Delete Forever</Text>
+          <Text style={styles.deleteBtnText}>{t('archived', 'deleteForever')}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -169,9 +171,9 @@ export default function ArchivedCustomersScreen() {
         >
           <MaterialIcons name="arrow-back" size={22} color="#fff" />
         </TouchableOpacity>
-        <Text style={styles.title}>📦 Archived Customers</Text>
+        <Text style={styles.title}>{t('archived', 'title')}</Text>
         <Text style={styles.subtitle}>
-          {customers.length} archived {customers.length === 1 ? 'customer' : 'customers'}
+          {t('archived', 'count', { count: customers.length.toString(), label: customers.length === 1 ? t('common', 'customer') : t('common', 'customers') })}
         </Text>
       </View>
 
@@ -181,9 +183,9 @@ export default function ArchivedCustomersScreen() {
             <View style={styles.emptyIconCircle}>
               <MaterialIcons name="inventory-2" size={40} color="#CBD5E1" />
             </View>
-            <Text style={styles.emptyText}>No archived customers</Text>
+            <Text style={styles.emptyText}>{t('archived', 'noArchived')}</Text>
             <Text style={styles.emptySubtext}>
-              Archived customers will appear here. You can restore them or delete them permanently.
+              {t('archived', 'noArchivedDesc')}
             </Text>
           </View>
         ) : (

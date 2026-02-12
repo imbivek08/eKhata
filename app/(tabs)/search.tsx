@@ -1,4 +1,5 @@
 import { Customer, getAllCustomers } from '@/database';
+import { useI18n } from '@/hooks/use-i18n';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -14,6 +15,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SearchScreen() {
+  const { t } = useI18n();
   const [query, setQuery] = useState('');
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [filtered, setFiltered] = useState<Customer[]>([]);
@@ -79,13 +81,13 @@ export default function SearchScreen() {
     <SafeAreaView style={styles.container}>
       {/* Hero Header */}
       <View style={styles.heroSection}>
-        <Text style={styles.title}>🔍 Search</Text>
-        <Text style={styles.subtitle}>Find customers quickly</Text>
+        <Text style={styles.title}>{t('search', 'title')}</Text>
+        <Text style={styles.subtitle}>{t('search', 'subtitle')}</Text>
         <View style={styles.searchContainer}>
           <MaterialIcons name="search" size={20} color="#94A3B8" style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search by name or phone..."
+            placeholder={t('search', 'placeholder')}
             placeholderTextColor="#64748B"
             value={query}
             onChangeText={setQuery}
@@ -104,7 +106,7 @@ export default function SearchScreen() {
         {query.length > 0 && (
           <View style={styles.resultsBadge}>
             <Text style={styles.resultsText}>
-              {filtered.length} result{filtered.length !== 1 ? 's' : ''} found
+              {filtered.length === 1 ? t('search', 'resultsFound', { count: 1 }) : t('search', 'resultsFoundPlural', { count: filtered.length })}
             </Text>
           </View>
         )}
@@ -119,10 +121,10 @@ export default function SearchScreen() {
             />
           </View>
           <Text style={styles.emptyText}>
-            {query ? 'No results found' : 'No customers yet'}
+            {query ? t('search', 'noResults') : t('search', 'noCustomers')}
           </Text>
           <Text style={styles.emptySubtext}>
-            {query ? 'Try a different search term' : 'Add customers from the home screen'}
+            {query ? t('search', 'tryDifferent') : t('search', 'addFromHome')}
           </Text>
         </View>
       ) : (

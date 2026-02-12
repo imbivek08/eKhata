@@ -1,3 +1,4 @@
+import { useI18n } from '@/hooks/use-i18n';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,11 +8,12 @@ interface LandingScreenProps {
 }
 
 export default function LandingScreen({ onGetStarted }: LandingScreenProps) {
+  const { t } = useI18n();
   const features = [
-    { icon: 'receipt-long' as const, text: 'Track customer purchases', color: '#E11D48' },
-    { icon: 'payments' as const, text: 'Record payments easily', color: '#16A34A' },
-    { icon: 'cloud-off' as const, text: 'Works offline — always', color: '#2563EB' },
-    { icon: 'lock' as const, text: 'Your data stays on device', color: '#D97706' },
+    { icon: 'receipt-long' as const, text: t('landing', 'trackPurchases'), color: '#E11D48' },
+    { icon: 'payments' as const, text: t('landing', 'recordPayments'), color: '#16A34A' },
+    { icon: 'cloud-off' as const, text: t('landing', 'worksOffline'), color: '#2563EB' },
+    { icon: 'lock' as const, text: t('landing', 'dataOnDevice'), color: '#D97706' },
   ];
 
   return (
@@ -22,7 +24,7 @@ export default function LandingScreen({ onGetStarted }: LandingScreenProps) {
           <Text style={styles.icon}>📒</Text>
         </View>
         <Text style={styles.title}>eKhata</Text>
-        <Text style={styles.subtitle}>Digital Khata for Your Shop</Text>
+        <Text style={styles.subtitle}>{t('common', 'tagline')}</Text>
       </View>
 
       <View style={styles.contentArea}>
@@ -41,10 +43,10 @@ export default function LandingScreen({ onGetStarted }: LandingScreenProps) {
       {/* Footer */}
       <View style={styles.footer}>
         <TouchableOpacity style={styles.button} onPress={onGetStarted} activeOpacity={0.85}>
-          <Text style={styles.buttonText}>Get Started</Text>
+          <Text style={styles.buttonText}>{t('landing', 'getStarted')}</Text>
           <MaterialIcons name="arrow-forward" size={20} color="#fff" />
         </TouchableOpacity>
-        <Text style={styles.footerText}>Simple · Secure · Offline</Text>
+        <Text style={styles.footerText}>{t('common', 'simpleSecureOffline')}</Text>
         </View>
       </View>
     </SafeAreaView>

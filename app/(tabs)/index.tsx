@@ -1,4 +1,5 @@
 import { Customer, getAllCustomers } from '@/database';
+import { useI18n } from '@/hooks/use-i18n';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
@@ -7,6 +8,7 @@ import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
+  const { t } = useI18n();
   const [customers, setCustomers] = useState<Customer[]>([]);
 
   const loadCustomers = async () => {
@@ -55,16 +57,16 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.container}>
       {/* Hero Header */}
       <View style={styles.heroSection}>
-        <Text style={styles.title}>📒 eKhata</Text>
-        <Text style={styles.subtitle}>Your digital ledger</Text>
+        <Text style={styles.title}>{t('home', 'title')}</Text>
+        <Text style={styles.subtitle}>{t('home', 'subtitle')}</Text>
         <View style={styles.statsRow}>
           <View style={styles.statBadge}>
             <MaterialIcons name="people" size={16} color="#93C5FD" />
-            <Text style={styles.statText}>{customers.length} customers</Text>
+            <Text style={styles.statText}>{t('home', 'customersCount', { count: customers.length })}</Text>
           </View>
           <View style={[styles.statBadge, { backgroundColor: 'rgba(239,68,68,0.15)' }]}>
             <MaterialIcons name="account-balance-wallet" size={16} color="#FCA5A5" />
-            <Text style={[styles.statText, { color: '#FCA5A5' }]}>₹{totalPending.toFixed(0)} pending</Text>
+            <Text style={[styles.statText, { color: '#FCA5A5' }]}>{t('home', 'pendingAmount', { amount: totalPending.toFixed(0) })}</Text>
           </View>
         </View>
       </View>
@@ -75,8 +77,8 @@ export default function HomeScreen() {
             <View style={styles.emptyIconCircle}>
               <MaterialIcons name="person-add" size={36} color="#CBD5E1" />
             </View>
-            <Text style={styles.emptyText}>No customers yet</Text>
-            <Text style={styles.emptySubtext}>Tap the + button to add your first customer</Text>
+            <Text style={styles.emptyText}>{t('home', 'noCustomers')}</Text>
+            <Text style={styles.emptySubtext}>{t('home', 'tapToAdd')}</Text>
           </View>
         ) : (
           <FlatList

@@ -1,4 +1,5 @@
 import { addCustomer } from '@/database';
+import { useI18n } from '@/hooks/use-i18n';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
@@ -26,6 +27,7 @@ export default function AddCustomerModal({
   onClose,
   onCustomerAdded,
 }: AddCustomerModalProps) {
+  const { t } = useI18n();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [photoUri, setPhotoUri] = useState<string | null>(null);
@@ -37,7 +39,7 @@ export default function AddCustomerModal({
       : await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Please allow access to continue');
+      Alert.alert(t('addCustomer', 'permissionNeeded'), t('addCustomer', 'permissionMessage'));
       return;
     }
 
@@ -59,16 +61,16 @@ export default function AddCustomerModal({
   };
 
   const showImagePicker = () => {
-    Alert.alert('Add Photo', 'Choose an option', [
-      { text: 'Take Photo', onPress: () => pickImage(true) },
-      { text: 'Choose from Gallery', onPress: () => pickImage(false) },
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('addCustomer', 'addPhoto'), '', [
+      { text: t('addCustomer', 'takePhoto'), onPress: () => pickImage(true) },
+      { text: t('addCustomer', 'chooseGallery'), onPress: () => pickImage(false) },
+      { text: t('common', 'cancel'), style: 'cancel' },
     ]);
   };
 
   const handleSave = async () => {
     if (!name.trim()) {
-      Alert.alert('Error', 'Please enter customer name');
+      Alert.alert(t('common', 'error'), t('addCustomer', 'nameRequired'));
       return;
     }
 
@@ -85,7 +87,7 @@ export default function AddCustomerModal({
       onCustomerAdded();
       onClose();
     } catch (error) {
-      Alert.alert('Error', 'Failed to add customer');
+      Alert.alert(t('common', 'error'), t('addCustomer', 'failedToAdd'));
       console.error(error);
     } finally {
       setSaving(false);
@@ -112,7 +114,7 @@ export default function AddCustomerModal({
               <View style={styles.headerIconCircle}>
                 <MaterialIcons name="person-add" size={20} color="#fff" />
               </View>
-              <Text style={styles.title}>Add Customer</Text>
+              <Text style={styles.title}>{t('addCustomer', 'title')}</Text>
             </View>
             <TouchableOpacity style={styles.closeBtn} onPress={handleClose}>
               <MaterialIcons name="close" size={20} color="#94A3B8" />
@@ -127,20 +129,20 @@ export default function AddCustomerModal({
               ) : (
                 <View style={styles.photoPlaceholder}>
                   <MaterialIcons name="camera-alt" size={28} color="#94A3B8" />
-                  <Text style={styles.photoPlaceholderLabel}>Add Photo</Text>
+                  <Text style={styles.photoPlaceholderLabel}>{t('addCustomer', 'addPhoto')}</Text>
                 </View>
               )}
             </TouchableOpacity>
 
             {/* Name */}
-            <Text style={styles.label}>Name *</Text>
+            <Text style={styles.label}>{t('addCustomer', 'nameStar')}</Text>
             <View style={styles.inputRow}>
               <MaterialIcons name="person" size={20} color="#94A3B8" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 value={name}
                 onChangeText={setName}
-                placeholder="Enter customer name"
+                placeholder={t('addCustomer', 'nameInput')}
                 placeholderTextColor="#CBD5E1"
                 autoFocus
                 editable={!saving}
@@ -148,14 +150,14 @@ export default function AddCustomerModal({
             </View>
 
             {/* Phone */}
-            <Text style={styles.label}>Phone (Optional)</Text>
+            <Text style={styles.label}>{t('addCustomer', 'phoneOptional')}</Text>
             <View style={styles.inputRow}>
               <MaterialIcons name="phone" size={20} color="#94A3B8" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 value={phone}
                 onChangeText={setPhone}
-                placeholder="Enter phone number"
+                placeholder={t('addCustomer', 'phoneInput')}
                 placeholderTextColor="#CBD5E1"
                 keyboardType="phone-pad"
                 editable={!saving}
@@ -169,7 +171,7 @@ export default function AddCustomerModal({
               activeOpacity={0.85}
             >
               <MaterialIcons name="check" size={20} color="#fff" />
-              <Text style={styles.saveButtonText}>{saving ? 'Saving...' : 'Save Customer'}</Text>
+              <Text style={styles.saveButtonText}>{saving ? t('common', 'saving') : t('addCustomer', 'saveCustomer')}</Text>
             </TouchableOpacity>
           </View>
         </View>

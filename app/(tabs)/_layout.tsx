@@ -1,11 +1,13 @@
 import AddCustomerModal from '@/components/add-customer-modal';
 import LandingScreen from '@/components/landing-screen';
+import { useI18n } from '@/hooks/use-i18n';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Tabs } from 'expo-router';
 import { useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 export default function TabLayout() {
+  const { t } = useI18n();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
 
@@ -27,7 +29,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: 'Home',
+            title: t('tabs', 'home'),
             tabBarIcon: ({ color, size }) => (
               <MaterialIcons name="home" size={size} color={color} />
             ),
@@ -36,7 +38,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="search"
           options={{
-            title: 'Search',
+            title: t('tabs', 'search'),
             tabBarIcon: ({ color, size }) => (
               <MaterialIcons name="search" size={size} color={color} />
             ),
@@ -65,7 +67,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="dashboard"
           options={{
-            title: 'Dashboard',
+            title: t('tabs', 'dashboard'),
             tabBarIcon: ({ color, size }) => (
               <MaterialIcons name="bar-chart" size={size} color={color} />
             ),
@@ -74,7 +76,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="menu"
           options={{
-            title: 'Menu',
+            title: t('tabs', 'menu'),
             tabBarIcon: ({ color, size }) => (
               <MaterialIcons name="menu" size={size} color={color} />
             ),

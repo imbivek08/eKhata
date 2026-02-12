@@ -6,6 +6,7 @@ import {
     getTotalOutstanding,
     PeriodSummary,
 } from '@/database';
+import { useI18n } from '@/hooks/use-i18n';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -55,6 +56,7 @@ function formatAmount(amount: number): string {
 }
 
 export default function DashboardScreen() {
+  const { t } = useI18n();
   const [period, setPeriod] = useState<Period>('week');
   const [summary, setSummary] = useState<PeriodSummary | null>(null);
   const [dailyData, setDailyData] = useState<DaySummary[]>([]);
@@ -104,9 +106,9 @@ export default function DashboardScreen() {
         >
         {/* Colored Header */}
         <View style={styles.heroSection}>
-          <Text style={styles.title}>📊 Dashboard</Text>
+          <Text style={styles.title}>{t('dashboard', 'title')}</Text>
           <Text style={styles.subtitle}>
-            {period === 'week' ? 'Your weekly overview' : 'Your monthly overview'}
+            {period === 'week' ? t('dashboard', 'weeklyOverview') : t('dashboard', 'monthlyOverview')}
           </Text>
 
           {/* Period Toggle */}
@@ -116,7 +118,7 @@ export default function DashboardScreen() {
               onPress={() => setPeriod('week')}
             >
               <Text style={[styles.toggleText, period === 'week' && styles.toggleTextActive]}>
-                This Week
+                {t('dashboard', 'thisWeek')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -124,7 +126,7 @@ export default function DashboardScreen() {
               onPress={() => setPeriod('month')}
             >
               <Text style={[styles.toggleText, period === 'month' && styles.toggleTextActive]}>
-                This Month
+                {t('dashboard', 'thisMonth')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -138,7 +140,7 @@ export default function DashboardScreen() {
                 <View style={[styles.cardIconCircle, { backgroundColor: '#FECDD3' }]}> 
                   <MaterialIcons name="arrow-upward" size={22} color="#E11D48" />
                 </View>
-                <Text style={styles.cardLabel}>Credit Given</Text>
+                <Text style={styles.cardLabel}>{t('dashboard', 'creditGiven')}</Text>
                 <Text style={[styles.cardAmount, { color: '#E11D48' }]}>
                   ₹{summary.totalPurchases.toFixed(0)}
                 </Text>
@@ -147,7 +149,7 @@ export default function DashboardScreen() {
                 <View style={[styles.cardIconCircle, { backgroundColor: '#BBF7D0' }]}> 
                   <MaterialIcons name="arrow-downward" size={22} color="#16A34A" />
                 </View>
-                <Text style={styles.cardLabel}>Collected</Text>
+                <Text style={styles.cardLabel}>{t('dashboard', 'collected')}</Text>
                 <Text style={[styles.cardAmount, { color: '#16A34A' }]}>
                   ₹{summary.totalPayments.toFixed(0)}
                 </Text>
@@ -158,7 +160,7 @@ export default function DashboardScreen() {
                 <View style={[styles.cardIconCircle, { backgroundColor: '#BFDBFE' }]}> 
                   <MaterialIcons name="swap-vert" size={22} color="#2563EB" />
                 </View>
-                <Text style={styles.cardLabel}>Net Balance</Text>
+                <Text style={styles.cardLabel}>{t('dashboard', 'netBalance')}</Text>
                 <Text style={[styles.cardAmount, { color: '#2563EB' }]}>
                   ₹{summary.netBalance.toFixed(0)}
                 </Text>
@@ -167,7 +169,7 @@ export default function DashboardScreen() {
                 <View style={[styles.cardIconCircle, { backgroundColor: '#FDE68A' }]}> 
                   <MaterialIcons name="account-balance-wallet" size={22} color="#D97706" />
                 </View>
-                <Text style={styles.cardLabel}>Outstanding</Text>
+                <Text style={styles.cardLabel}>{t('dashboard', 'outstanding')}</Text>
                 <Text style={[styles.cardAmount, { color: '#D97706' }]}>
                   ₹{totalOutstanding.toFixed(0)}
                 </Text>
@@ -176,7 +178,7 @@ export default function DashboardScreen() {
             <View style={styles.transactionCountBadge}>
               <MaterialIcons name="receipt-long" size={14} color="#007AFF" />
               <Text style={styles.transactionCount}>
-                {summary.transactionCount} transactions
+                {summary.transactionCount} {t('dashboard', 'transactions')}
               </Text>
             </View>
           </View>
@@ -185,7 +187,7 @@ export default function DashboardScreen() {
         {/* Daily Breakdown */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>📅 Daily Breakdown</Text>
+            <Text style={styles.sectionTitle}>{t('dashboard', 'dailyBreakdown')}</Text>
           </View>
           <View style={styles.sectionCard}>
             {dailyData.length === 0 ? (
@@ -193,8 +195,8 @@ export default function DashboardScreen() {
                 <View style={styles.emptyIconCircle}>
                   <MaterialIcons name="event-note" size={28} color="#CBD5E1" />
                 </View>
-                <Text style={styles.emptyText}>No transactions in this period</Text>
-                <Text style={styles.emptySubtext}>Transactions will show up here</Text>
+                <Text style={styles.emptyText}>{t('dashboard', 'noTransactions')}</Text>
+                <Text style={styles.emptySubtext}>{t('dashboard', 'transactionsWillShow')}</Text>
               </View>
             ) : (
               dailyData.map((day, idx) => (
@@ -223,11 +225,11 @@ export default function DashboardScreen() {
               <View style={styles.legendRow}>
                 <View style={styles.legendItem}>
                   <View style={[styles.legendDot, { backgroundColor: '#E11D48' }]} />
-                  <Text style={styles.legendText}>Credit</Text>
+                  <Text style={styles.legendText}>{t('dashboard', 'credit')}</Text>
                 </View>
                 <View style={styles.legendItem}>
                   <View style={[styles.legendDot, { backgroundColor: '#16A34A' }]} />
-                  <Text style={styles.legendText}>Collected</Text>
+                  <Text style={styles.legendText}>{t('dashboard', 'payment')}</Text>
                 </View>
               </View>
             )}
@@ -237,7 +239,7 @@ export default function DashboardScreen() {
         {/* Top Debtors */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>🔥 Top Pending</Text>
+            <Text style={styles.sectionTitle}>{t('dashboard', 'topPending')}</Text>
           </View>
           <View style={styles.sectionCard}>
             {topDebtors.length === 0 ? (
@@ -245,8 +247,8 @@ export default function DashboardScreen() {
                 <View style={styles.emptyIconCircle}>
                   <MaterialIcons name="people-outline" size={28} color="#CBD5E1" />
                 </View>
-                <Text style={styles.emptyText}>No pending amounts</Text>
-                <Text style={styles.emptySubtext}>All clear! 🎉</Text>
+                <Text style={styles.emptyText}>{t('dashboard', 'noPending')}</Text>
+                <Text style={styles.emptySubtext}>{t('dashboard', 'allClear')}</Text>
               </View>
             ) : (
               topDebtors.map((debtor, index) => {

@@ -1,4 +1,5 @@
 import { addTransaction } from '@/database';
+import { useI18n } from '@/hooks/use-i18n';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useState } from 'react';
 import {
@@ -30,6 +31,7 @@ export default function AddPaymentModal({
   onClose,
   onPaymentAdded,
 }: AddPaymentModalProps) {
+  const { t } = useI18n();
   const [amount, setAmount] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -41,17 +43,17 @@ export default function AddPaymentModal({
     const paymentAmount = parseFloat(amount);
 
     if (!paymentAmount || paymentAmount <= 0) {
-      Alert.alert('Error', 'Please enter a valid amount');
+      Alert.alert(t('common', 'error'), t('addPayment', 'invalidAmount'));
       return;
     }
 
     if (paymentAmount > totalPending) {
       Alert.alert(
-        'Warning',
-        `Payment amount ₹${paymentAmount} is more than pending ₹${totalPending}. Continue?`,
+        t('addPayment', 'warningTitle'),
+        t('addPayment', 'warningMessage', { payment: paymentAmount.toString(), pending: totalPending.toString() }),
         [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Continue', onPress: () => savePayment(paymentAmount) },
+          { text: t('common', 'cancel'), style: 'cancel' },
+          { text: t('addPayment', 'continue'), onPress: () => savePayment(paymentAmount) },
         ]
       );
       return;
@@ -73,7 +75,7 @@ export default function AddPaymentModal({
       onPaymentAdded();
       onClose();
     } catch (error) {
-      Alert.alert('Error', 'Failed to record payment');
+      Alert.alert(t('common', 'error'), t('addPayment', 'failedToRecord'));
       console.error(error);
     } finally {
       setSaving(false);
@@ -99,7 +101,7 @@ export default function AddPaymentModal({
                 <MaterialIcons name="payments" size={20} color="#fff" />
               </View>
               <View>
-                <Text style={styles.title}>Receive Payment</Text>
+                <Text style={styles.title}>{t('addPayment', 'title')}</Text>
                 <Text style={styles.subtitle}>{customerName}</Text>
               </View>
             </View>
@@ -115,13 +117,13 @@ export default function AddPaymentModal({
                 <View style={styles.pendingIconCircle}>
                   <MaterialIcons name="account-balance-wallet" size={20} color="#E11D48" />
                 </View>
-                <Text style={styles.pendingLabel}>Total Pending</Text>
+                <Text style={styles.pendingLabel}>{t('addPayment', 'totalPending')}</Text>
               </View>
               <Text style={styles.pendingAmount}>₹{totalPending.toFixed(0)}</Text>
             </View>
 
             {/* Amount Input */}
-            <Text style={styles.label}>Amount Received</Text>
+            <Text style={styles.label}>{t('addPayment', 'amountReceived')}</Text>
             <View style={styles.amountInputWrap}>
               <Text style={styles.rupeeSymbol}>₹</Text>
               <TextInput
@@ -144,7 +146,7 @@ export default function AddPaymentModal({
               activeOpacity={0.7}
             >
               <MaterialIcons name="done-all" size={18} color="#16A34A" />
-              <Text style={styles.fullButtonText}>Full Payment (₹{totalPending.toFixed(0)})</Text>
+              <Text style={styles.fullButtonText}>{t('addPayment', 'fullPayment')} (₹{totalPending.toFixed(0)})</Text>
             </TouchableOpacity>
 
             {/* Save */}
@@ -156,7 +158,7 @@ export default function AddPaymentModal({
             >
               <MaterialIcons name="check" size={20} color="#fff" />
               <Text style={styles.saveButtonText}>
-                {saving ? 'Saving...' : 'Save Payment'}
+                {saving ? t('common', 'saving') : t('addPayment', 'savePayment')}
               </Text>
             </TouchableOpacity>
           </View>

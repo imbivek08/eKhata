@@ -2,28 +2,31 @@ import AddPaymentModal from '@/components/add-payment-modal';
 import AddPurchaseModal from '@/components/add-purchase-modal';
 import EditCustomerModal from '@/components/edit-customer-modal';
 import {
-  archiveCustomer,
-  Customer,
-  getCustomerById,
-  getCustomerTransactionsWithProducts,
-  TransactionWithProducts,
+    archiveCustomer,
+    Customer,
+    getCustomerById,
+    getCustomerTransactionsWithProducts,
+    TransactionWithProducts,
 } from '@/database';
+import { useI18n } from '@/hooks/use-i18n';
+import { generateAndSharePDF, sendWhatsAppReminder } from '@/utils/generate-statement';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    FlatList,
+    Image,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CustomerDetailScreen() {
+  const { t } = useI18n();
   const params = useLocalSearchParams<{ id: string }>();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
   const [customer, setCustomer] = useState<Customer | null>(null);
@@ -56,19 +59,19 @@ export default function CustomerDetailScreen() {
   const handleArchive = () => {
     if (!customer) return;
     Alert.alert(
-      'Archive Customer',
-      `Are you sure you want to archive "${customer.name}"?\n\nThis will hide them from your main list, but all transaction data will be preserved. You can restore them anytime from Menu → Archived Customers.`,
+      t('customer', 'archiveTitle'),
+      t('customer', 'archiveMessage', { name: customer.name }),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common', 'cancel'), style: 'cancel' },
         {
-          text: 'Archive',
+          text: t('customer', 'archive'),
           style: 'destructive',
           onPress: async () => {
             try {
               await archiveCustomer(customer.id);
               router.back();
             } catch (error) {
-              Alert.alert('Error', 'Failed to archive customer');
+              Alert.alert(t('common', 'error'), t('customer', 'archiveError'));
               console.error(error);
             }
           },
@@ -109,7 +112,7 @@ export default function CustomerDetailScreen() {
               <View style={styles.productInfo}>
                 <Text style={styles.productName}>{product.product_name}</Text>
                 {product.quantity && (
-                  <Text style={styles.productQuantity}>Qty: {product.quantity}</Text>
+                  <Text style={styles.productQuantity}>{t('customer', 'qty')}: {product.quantity}</Text>
                 )}
               </View>
               <Text style={styles.productAmount}>₹{product.amount}</Text>
@@ -121,7 +124,7 @@ export default function CustomerDetailScreen() {
       {item.type === 'payment' && (
         <View style={styles.paymentBadge}>
           <MaterialIcons name="check-circle" size={14} color="#16A34A" />
-          <Text style={styles.paymentLabel}>Payment Received</Text>
+          <Text style={styles.paymentLabel}>{t('customer', 'paymentReceived')}</Text>
         </View>
       )}
 
@@ -143,7 +146,7 @@ export default function CustomerDetailScreen() {
     return (
       <SafeAreaView style={styles.errorContainer} edges={['top']}>
         <MaterialIcons name="error-outline" size={48} color="#CBD5E1" />
-        <Text style={styles.errorText}>Customer not found</Text>
+        <Text style={styles.errorText}>{t('customer', 'notFound')}</Text>
       </SafeAreaView>
     );
   }
@@ -189,7 +192,7 @@ export default function CustomerDetailScreen() {
         )}
         <Text style={styles.customerName}>{customer.name}</Text>
         {customer.phone && <Text style={styles.customerPhone}>{customer.phone}</Text>}
-        <Text style={styles.balanceLabel}>Total Pending</Text>
+        <Text style={styles.balanceLabel}>{t('customer', 'totalPending')}</Text>
         <Text
           style={[
             styles.balanceAmount,
@@ -209,7 +212,7 @@ export default function CustomerDetailScreen() {
           activeOpacity={0.8}
         >
           <MaterialIcons name="add-shopping-cart" size={20} color="#fff" />
-          <Text style={styles.buttonText}>Add Products</Text>
+          <Text style={styles.buttonText}>{t('customer', 'addProducts')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -218,13 +221,34 @@ export default function CustomerDetailScreen() {
           activeOpacity={0.8}
         >
           <MaterialIcons name="payments" size={20} color="#fff" />
-          <Text style={styles.buttonText}>Receive Payment</Text>
+          <Text style={styles.buttonText}>{t('customer', 'receivePayment')}</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Share & Remind */}
+      <View style={styles.shareRow}>
+        <TouchableOpacity
+          style={styles.shareBtn}
+          onPress={() => generateAndSharePDF(customer, transactions, t)}
+          activeOpacity={0.8}
+        >
+          <MaterialIcons name="picture-as-pdf" size={18} color="#4A90D9" />
+          <Text style={styles.shareBtnText}>{t('customer', 'sharePdf')}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.whatsappBtn}
+          onPress={() => sendWhatsAppReminder(customer, t)}
+          activeOpacity={0.8}
+        >
+          <MaterialIcons name="message" size={18} color="#25D366" />
+          <Text style={styles.whatsappBtnText}>{t('customer', 'whatsappRemind')}</Text>
         </TouchableOpacity>
       </View>
 
       {/* History */}
       <View style={styles.historyHeader}>
-        <Text style={styles.historyTitle}>📋 Transaction History</Text>
+        <Text style={styles.historyTitle}>{t('customer', 'transactionHistory')}</Text>
         <View style={styles.historyCountBadge}>
           <Text style={styles.historyCountText}>{transactions.length}</Text>
         </View>
@@ -235,8 +259,8 @@ export default function CustomerDetailScreen() {
           <View style={styles.emptyIconCircle}>
             <MaterialIcons name="receipt-long" size={32} color="#CBD5E1" />
           </View>
-          <Text style={styles.emptyText}>No transactions yet</Text>
-          <Text style={styles.emptySubtext}>Record a purchase to get started</Text>
+          <Text style={styles.emptyText}>{t('customer', 'noTransactions')}</Text>
+          <Text style={styles.emptySubtext}>{t('customer', 'recordPurchase')}</Text>
         </View>
       ) : (
         <FlatList
@@ -400,6 +424,46 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     gap: 12,
+  },
+  shareRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingBottom: 10,
+    gap: 10,
+  },
+  shareBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    backgroundColor: '#EFF6FF',
+    borderRadius: 10,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: '#BFDBFE',
+  },
+  shareBtnText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#4A90D9',
+  },
+  whatsappBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    backgroundColor: '#F0FDF4',
+    borderRadius: 10,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: '#BBF7D0',
+  },
+  whatsappBtnText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#25D366',
   },
   purchaseButton: {
     flex: 1,

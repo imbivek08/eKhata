@@ -1,4 +1,5 @@
 import { getAllCustomers, getArchivedCount } from '@/database';
+import { LANGUAGE_LABELS, Language, useI18n } from '@/hooks/use-i18n';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
@@ -7,6 +8,7 @@ import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'rea
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function MenuScreen() {
+  const { t, lang, setLang } = useI18n();
   const [totalCustomers, setTotalCustomers] = useState(0);
   const [totalPending, setTotalPending] = useState(0);
   const [archivedCount, setArchivedCount] = useState(0);
@@ -29,22 +31,22 @@ export default function MenuScreen() {
     <SafeAreaView style={styles.container}>
       {/* Hero Header */}
       <View style={styles.heroSection}>
-        <Text style={styles.title}>⚙️ Menu</Text>
-        <Text style={styles.subtitle}>Settings & info</Text>
+        <Text style={styles.title}>{t('menu', 'title')}</Text>
+        <Text style={styles.subtitle}>{t('menu', 'subtitle')}</Text>
       </View>
 
       <View style={styles.contentArea}>
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Overview Cards */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>OVERVIEW</Text>
+          <Text style={styles.sectionTitle}>{t('menu', 'overview')}</Text>
           <View style={styles.overviewCards}>
             <View style={styles.overviewCard}>
               <View style={[styles.overviewIconCircle, { backgroundColor: '#DBEAFE' }]}>
                 <MaterialIcons name="people" size={24} color="#2563EB" />
               </View>
               <Text style={styles.overviewValue}>{totalCustomers}</Text>
-              <Text style={styles.overviewLabel}>Customers</Text>
+              <Text style={styles.overviewLabel}>{t('menu', 'customersLabel')}</Text>
             </View>
             <View style={styles.overviewCard}>
               <View style={[styles.overviewIconCircle, { backgroundColor: '#FECDD3' }]}>
@@ -53,14 +55,14 @@ export default function MenuScreen() {
               <Text style={[styles.overviewValue, totalPending > 0 ? { color: '#E11D48' } : {}]}>
                 ₹{totalPending.toFixed(0)}
               </Text>
-              <Text style={styles.overviewLabel}>Total Pending</Text>
+              <Text style={styles.overviewLabel}>{t('menu', 'totalPending')}</Text>
             </View>
           </View>
         </View>
 
         {/* Archived Customers */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>CUSTOMERS</Text>
+          <Text style={styles.sectionTitle}>{t('menu', 'customersSection')}</Text>
           <View style={styles.menuCard}>
             <TouchableOpacity
               style={styles.menuItem}
@@ -71,7 +73,7 @@ export default function MenuScreen() {
                 <View style={[styles.menuIconCircle, { backgroundColor: '#FEF3C7' }]}>
                   <MaterialIcons name="archive" size={20} color="#D97706" />
                 </View>
-                <Text style={styles.menuItemLabel}>Archived Customers</Text>
+                <Text style={styles.menuItemLabel}>{t('menu', 'archivedCustomers')}</Text>
               </View>
               <View style={styles.menuItemRight}>
                 {archivedCount > 0 && (
@@ -85,14 +87,51 @@ export default function MenuScreen() {
           </View>
         </View>
 
+        {/* Language Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('menu', 'languageSection')}</Text>
+          <View style={styles.menuCard}>
+            <View style={styles.languageRow}>
+              <View style={styles.menuItemLeft}>
+                <View style={[styles.menuIconCircle, { backgroundColor: '#E0E7FF' }]}>
+                  <MaterialIcons name="translate" size={20} color="#6366F1" />
+                </View>
+                <Text style={styles.menuItemLabel}>{t('menu', 'language')}</Text>
+              </View>
+              <View style={styles.languageToggle}>
+                {(['en', 'ne'] as Language[]).map((code) => (
+                  <TouchableOpacity
+                    key={code}
+                    style={[
+                      styles.langBtn,
+                      lang === code && styles.langBtnActive,
+                    ]}
+                    onPress={() => setLang(code)}
+                    activeOpacity={0.7}
+                  >
+                    <Text
+                      style={[
+                        styles.langBtnText,
+                        lang === code && styles.langBtnTextActive,
+                      ]}
+                    >
+                      {LANGUAGE_LABELS[code]}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          </View>
+        </View>
+
         {/* App Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>APP</Text>
+          <Text style={styles.sectionTitle}>{t('menu', 'appSection')}</Text>
           <View style={styles.menuCard}>
             <TouchableOpacity
               style={styles.menuItem}
               onPress={() =>
-                Alert.alert('About eKhata', 'Version 1.0.0\nA simple khata (ledger) app to manage customer accounts.')
+                Alert.alert(t('menu', 'about') + ' eKhata', t('menu', 'aboutText'))
               }
               activeOpacity={0.6}
             >
@@ -100,7 +139,7 @@ export default function MenuScreen() {
                 <View style={[styles.menuIconCircle, { backgroundColor: '#DBEAFE' }]}>
                   <MaterialIcons name="info-outline" size={20} color="#2563EB" />
                 </View>
-                <Text style={styles.menuItemLabel}>About</Text>
+                <Text style={styles.menuItemLabel}>{t('menu', 'about')}</Text>
               </View>
               <MaterialIcons name="chevron-right" size={22} color="#CBD5E1" />
             </TouchableOpacity>
@@ -111,11 +150,11 @@ export default function MenuScreen() {
               style={styles.menuItem}
               onPress={() =>
                 Alert.alert(
-                  'Rate eKhata',
-                  'Would you like to rate this app?',
+                  t('menu', 'rateApp'),
+                  t('menu', 'rateQuestion'),
                   [
-                    { text: 'Not Now', style: 'cancel' },
-                    { text: 'Rate', onPress: () => {} },
+                    { text: t('menu', 'notNow'), style: 'cancel' },
+                    { text: t('menu', 'rate'), onPress: () => {} },
                   ]
                 )
               }
@@ -125,7 +164,7 @@ export default function MenuScreen() {
                 <View style={[styles.menuIconCircle, { backgroundColor: '#FEF3C7' }]}>
                   <MaterialIcons name="star" size={20} color="#D97706" />
                 </View>
-                <Text style={styles.menuItemLabel}>Rate App</Text>
+                <Text style={styles.menuItemLabel}>{t('menu', 'rateApp')}</Text>
               </View>
               <MaterialIcons name="chevron-right" size={22} color="#CBD5E1" />
             </TouchableOpacity>
@@ -135,7 +174,7 @@ export default function MenuScreen() {
             <TouchableOpacity
               style={styles.menuItem}
               onPress={() =>
-                Alert.alert('Help', 'Need help? Contact support@ekhata.app')
+                Alert.alert(t('menu', 'helpSupport'), t('menu', 'helpText'))
               }
               activeOpacity={0.6}
             >
@@ -143,7 +182,7 @@ export default function MenuScreen() {
                 <View style={[styles.menuIconCircle, { backgroundColor: '#D1FAE5' }]}>
                   <MaterialIcons name="help-outline" size={20} color="#059669" />
                 </View>
-                <Text style={styles.menuItemLabel}>Help & Support</Text>
+                <Text style={styles.menuItemLabel}>{t('menu', 'helpSupport')}</Text>
               </View>
               <MaterialIcons name="chevron-right" size={22} color="#CBD5E1" />
             </TouchableOpacity>
@@ -152,8 +191,8 @@ export default function MenuScreen() {
 
         {/* Footer */}
         <View style={styles.footer}>
-          <Text style={styles.footerText}>eKhata v1.0.0</Text>
-          <Text style={styles.footerSubtext}>Made with ❤️ for local shopkeepers</Text>
+          <Text style={styles.footerText}>{t('menu', 'footer')}</Text>
+          <Text style={styles.footerSubtext}>{t('menu', 'footerSub')}</Text>
         </View>
         </ScrollView>
       </View>
@@ -314,5 +353,39 @@ const styles = StyleSheet.create({
   footerSubtext: {
     fontSize: 12,
     color: '#E2E8F0',
+  },
+  languageRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  languageToggle: {
+    flexDirection: 'row',
+    backgroundColor: '#F1F5F9',
+    borderRadius: 10,
+    padding: 3,
+  },
+  langBtn: {
+    paddingVertical: 7,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+  },
+  langBtnActive: {
+    backgroundColor: '#4A90D9',
+    shadowColor: '#4A90D9',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  langBtnText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#64748B',
+  },
+  langBtnTextActive: {
+    color: '#fff',
   },
 });

@@ -5,6 +5,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import 'react-native-reanimated';
 
 import { initDatabase } from '@/database';
+import { I18nProvider } from '@/hooks/use-i18n';
 
 export default function RootLayout() {
   const [dbInitialized, setDbInitialized] = useState(false);
@@ -46,14 +47,14 @@ export default function RootLayout() {
   }
 
   return (
-    <>
+    <I18nProvider>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="customer/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="archived" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="light" />
-    </>
+    </I18nProvider>
   );
 }
 

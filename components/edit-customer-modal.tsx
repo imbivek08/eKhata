@@ -1,18 +1,19 @@
 import { Customer, updateCustomer } from '@/database';
+import { useI18n } from '@/hooks/use-i18n';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
 import {
-    Alert,
-    Image,
-    KeyboardAvoidingView,
-    Modal,
-    Platform,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 interface EditCustomerModalProps {
@@ -28,6 +29,7 @@ export default function EditCustomerModal({
   onClose,
   onCustomerUpdated,
 }: EditCustomerModalProps) {
+  const { t } = useI18n();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [photoUri, setPhotoUri] = useState<string | null>(null);
@@ -48,7 +50,7 @@ export default function EditCustomerModal({
       : await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Please allow access to continue');
+      Alert.alert(t('addCustomer', 'permissionNeeded'), t('addCustomer', 'permissionMessage'));
       return;
     }
 
@@ -71,22 +73,22 @@ export default function EditCustomerModal({
 
   const showImagePicker = () => {
     const options: any[] = [
-      { text: 'Take Photo', onPress: () => pickImage(true) },
-      { text: 'Choose from Gallery', onPress: () => pickImage(false) },
+      { text: t('addCustomer', 'takePhoto'), onPress: () => pickImage(true) },
+      { text: t('addCustomer', 'chooseGallery'), onPress: () => pickImage(false) },
     ];
 
     // Option to remove photo if one exists
     if (photoUri) {
       options.push({
-        text: 'Remove Photo',
+        text: t('editCustomer', 'removePhoto'),
         style: 'destructive',
         onPress: () => setPhotoUri(null),
       });
     }
 
-    options.push({ text: 'Cancel', style: 'cancel' });
+    options.push({ text: t('common', 'cancel'), style: 'cancel' });
 
-    Alert.alert('Change Photo', 'Choose an option', options);
+    Alert.alert(t('editCustomer', 'changePhoto'), '', options);
   };
 
   const hasChanges = () => {
@@ -99,7 +101,7 @@ export default function EditCustomerModal({
 
   const handleSave = async () => {
     if (!name.trim()) {
-      Alert.alert('Error', 'Please enter customer name');
+      Alert.alert(t('common', 'error'), t('addCustomer', 'nameRequired'));
       return;
     }
 
@@ -118,7 +120,7 @@ export default function EditCustomerModal({
       onCustomerUpdated();
       onClose();
     } catch (error) {
-      Alert.alert('Error', 'Failed to update customer');
+      Alert.alert(t('common', 'error'), t('editCustomer', 'failedToUpdate'));
       console.error(error);
     } finally {
       setSaving(false);
@@ -128,11 +130,11 @@ export default function EditCustomerModal({
   const handleClose = () => {
     if (hasChanges()) {
       Alert.alert(
-        'Discard Changes?',
-        'You have unsaved changes. Are you sure you want to close?',
+        t('editCustomer', 'discardTitle'),
+        t('editCustomer', 'discardMessage'),
         [
-          { text: 'Keep Editing', style: 'cancel' },
-          { text: 'Discard', style: 'destructive', onPress: onClose },
+          { text: t('editCustomer', 'keepEditing'), style: 'cancel' },
+          { text: t('editCustomer', 'discard'), style: 'destructive', onPress: onClose },
         ]
       );
     } else {
@@ -153,7 +155,7 @@ export default function EditCustomerModal({
               <View style={styles.headerIconCircle}>
                 <MaterialIcons name="edit" size={20} color="#fff" />
               </View>
-              <Text style={styles.title}>Edit Customer</Text>
+              <Text style={styles.title}>{t('editCustomer', 'title')}</Text>
             </View>
             <TouchableOpacity style={styles.closeBtn} onPress={handleClose}>
               <MaterialIcons name="close" size={20} color="#94A3B8" />
@@ -173,34 +175,34 @@ export default function EditCustomerModal({
               ) : (
                 <View style={styles.photoPlaceholder}>
                   <MaterialIcons name="camera-alt" size={28} color="#94A3B8" />
-                  <Text style={styles.photoPlaceholderLabel}>Add Photo</Text>
+                  <Text style={styles.photoPlaceholderLabel}>{t('addCustomer', 'addPhoto')}</Text>
                 </View>
               )}
             </TouchableOpacity>
 
             {/* Name */}
-            <Text style={styles.label}>Name *</Text>
+            <Text style={styles.label}>{t('addCustomer', 'nameStar')}</Text>
             <View style={styles.inputRow}>
               <MaterialIcons name="person" size={20} color="#94A3B8" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 value={name}
                 onChangeText={setName}
-                placeholder="Enter customer name"
+                placeholder={t('addCustomer', 'nameInput')}
                 placeholderTextColor="#CBD5E1"
                 editable={!saving}
               />
             </View>
 
             {/* Phone */}
-            <Text style={styles.label}>Phone (Optional)</Text>
+            <Text style={styles.label}>{t('addCustomer', 'phoneOptional')}</Text>
             <View style={styles.inputRow}>
               <MaterialIcons name="phone" size={20} color="#94A3B8" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 value={phone}
                 onChangeText={setPhone}
-                placeholder="Enter phone number"
+                placeholder={t('addCustomer', 'phoneInput')}
                 placeholderTextColor="#CBD5E1"
                 keyboardType="phone-pad"
                 editable={!saving}
@@ -214,7 +216,7 @@ export default function EditCustomerModal({
               activeOpacity={0.85}
             >
               <MaterialIcons name="check" size={20} color="#fff" />
-              <Text style={styles.saveButtonText}>{saving ? 'Saving...' : 'Save Changes'}</Text>
+              <Text style={styles.saveButtonText}>{saving ? t('common', 'saving') : t('editCustomer', 'saveChanges')}</Text>
             </TouchableOpacity>
           </View>
         </View>
